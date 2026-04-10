@@ -1,48 +1,61 @@
-// ===== DONNÉES MOCK =====
 
-let defaultStudents = [
-{
-id: 1,
-nom: "Rakoto",
-prenom: "Jean",
-dateNais: "2000-05-10",
-email: "jean@mail.com",
-tel: "+261123456",
-adresse: "Antananarivo",
-niveau: "B1",
-passport: "P12345",
-cin: "101234567"
+
+const ETUDIENT_WEBHOOK = "https://hook.us2.make.com/pu7n7c9lh533ckeftgk7t7e83ls4o8sx";
+async function fetchStudents() {
+    const res = await fetch(ETUDIENT_WEBHOOK, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            action: "fetch_students"
+        })
+    });
+
+    // Récupération de la réponse
+    const data = await res.json();
+    students = data;
+    console.log(data);
+    return data;
+
 }
-];
 
 let students = [];
-if (localStorage.getItem("studentsData")) {
-    students = JSON.parse(localStorage.getItem("studentsData"));
-} else {
-    students = defaultStudents;
-    localStorage.setItem("studentsData", JSON.stringify(students));
-}
+console.log("ok");
+async function loadStudents() {
 
+    if (localStorage.getItem("studentsData")) {
+        students = JSON.parse(localStorage.getItem("studentsData"));
+
+    } else {
+        //hook de waiis
+        students = await fetchStudents();
+        localStorage.setItem("studentsData", JSON.stringify(students));
+    }
+}
+window.onload = loadStudents;
 let editIndex = null;
+students = localStorage.getItem("studentsData") ? JSON.parse(localStorage.getItem("studentsData")) : [];
+console.log(students);
 
 
 // ===== AFFICHAGE =====
 
 function displayStudents(dataToDisplay = students) {
 
-const table = document.getElementById("studentTable");
-if (!table) return;
+    const table = document.getElementById("studentTable");
+    if (!table) return;
 
-table.innerHTML = "";
+    table.innerHTML = "";
 
-const countEl = document.getElementById("studentCount");
-if (countEl) countEl.innerText = dataToDisplay.length;
+    const countEl = document.getElementById("studentCount");
+    if (countEl) countEl.innerText = dataToDisplay.length;
 
-dataToDisplay.forEach((s) => {
-    // Retrouver l'index original dans le tableau global students
-    const originalIndex = students.indexOf(s);
+    dataToDisplay.forEach((s) => {
+        // Retrouver l'index original dans le tableau global students
+        const originalIndex = students.indexOf(s);
 
-table.innerHTML += `
+        table.innerHTML += `
 <tr class="border-b border-[#e2e8f0] hover:bg-[#f8fafc] bg-white transition-colors">
 <td class="p-[14px] text-gray-700 font-medium">${s.nom}</td>
 <td class="p-[14px] text-gray-700">${s.prenom}</td>
@@ -83,7 +96,7 @@ table.innerHTML += `
 </tr>
 `;
 
-});
+    });
 
 }
 
@@ -93,17 +106,17 @@ table.innerHTML += `
 
 function clearForm() {
 
-document.getElementById("nom").value = "";
-document.getElementById("prenom").value = "";
-document.getElementById("dateNais").value = "";
-document.getElementById("email").value = "";
-document.getElementById("tel").value = "";
-document.getElementById("adresse").value = "";
-document.getElementById("niveau").value = "A1";
-document.getElementById("passport").value = "";
-document.getElementById("cin").value = "";
+    document.getElementById("nom").value = "";
+    document.getElementById("prenom").value = "";
+    document.getElementById("dateNais").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("tel").value = "";
+    document.getElementById("adresse").value = "";
+    document.getElementById("niveau").value = "A1";
+    document.getElementById("passport").value = "";
+    document.getElementById("cin").value = "";
 
-editIndex = null;
+    editIndex = null;
 
 }
 
@@ -112,86 +125,145 @@ editIndex = null;
 // ===== SAUVEGARDE =====
 
 function saveStudent() {
-let student = {
-id: editIndex === null ? Date.now() : students[editIndex].id,
-nom: document.getElementById("nom").value,
-prenom: document.getElementById("prenom").value,
-dateNais: document.getElementById("dateNais").value,
-email: document.getElementById("email").value,
-tel: document.getElementById("tel").value,
-adresse: document.getElementById("adresse").value,
-niveau: document.getElementById("niveau").value,
-passport: document.getElementById("passport").value,
-cin: document.getElementById("cin").value
-};
+    let student = {
+        id: editIndex === null ? Date.now() : students[editIndex].id,
+        nom: document.getElementById("nom").value,
+        prenom: document.getElementById("prenom").value,
+        dateNais: document.getElementById("dateNais").value,
+        email: document.getElementById("email").value,
+        tel: document.getElementById("tel").value,
+        adresse: document.getElementById("adresse").value,
+        niveau: document.getElementById("niveau").value,
+        passport: document.getElementById("passport").value,
+        cin: document.getElementById("cin").value
+    };
 
-if (editIndex === null) {
-students.push(student);
-} else {
-students[editIndex] = student;
-}
-localStorage.setItem("studentsData", JSON.stringify(students));
-closeForm();
-displayStudents();
+    if (editIndex === null) {
+        students.push(student);
+    } else {
+        students[editIndex] = student;
+    }
+    localStorage.setItem("studentsData", JSON.stringify(students));
+    closeForm();
+    displayStudents();
 }
 
 let isSubmitting = false;
+let Ajout_mofif_webhook = "https://hook.us2.make.com/l3ykkvvwvvfws27xb1gkylc2bef1xpp3";
+async function ajoutermodifierEtudiant(event) {
 
-function sendData(event) {
-if (event) event.preventDefault();
-if (isSubmitting) return;
-isSubmitting = true;
+    if (event) event.preventDefault();
+    if (isSubmitting) return;
+    isSubmitting = true;
 
-let indexStr = localStorage.getItem("editIndex");
-let editIndexParam = indexStr !== null ? parseInt(indexStr) : null;
+    let indexStr = localStorage.getItem("editIndex");
+    let editIndexParam = indexStr !== null ? parseInt(indexStr) : null;
 
-// Helper to get value from either HTML IDs
-const getVal = (ids) => {
-    for (let id of ids) {
-        let el = document.getElementById(id);
-        if (el) return el.value;
+    // Helper to get value from either HTML IDs
+    const getVal = (ids) => {
+        for (let id of ids) {
+            let el = document.getElementById(id);
+            if (el) return el.value;
+        }
+        return "";
+    };
+
+    // ===== CERTIFICATS =====
+    const checked = (id) => { const el = document.getElementById(id); return el ? el.checked : false; };
+    const certStr = (ids) => ids.map(id => checked(id) ? id.slice(-1) : '').join('');
+
+    let student = {
+        id: editIndexParam !== null ? students[editIndexParam].id : Date.now(),
+        nom: getVal(["idNom", "nom"]),
+        prenom: getVal(["idPrenom", "prenom"]),
+        dateNais: getVal(["idDateNais", "dateNais"]),
+        email: getVal(["idEmail", "email"]),
+        tel: getVal(["idTel", "tel"]),
+        adresse: getVal(["idAdresse", "adresse"]),
+        niveau: getVal(["idNiveau", "niveau"]),
+        a1: checked("A1"),
+        a2: checked("A2"),
+        c1: certStr(["C1L", "C1H", "C1M", "C1S"]),
+        c2: certStr(["C2L", "C2H", "C2M", "C2S"]),
+        b1: certStr(["B1L", "B1H", "B1M", "B1S"]),
+        b2: certStr(["B2L", "B2H", "B2M", "B2S"]),
+        paramede: checked("idParamede"),
+        passport: getVal(["idNumPass", "passport"]),
+        datFinPass: getVal(["idDatFinPass", "datFinPass"]),
+        numCop: getVal(["idNumCop", "numCop"]),
+        datFinCop: getVal(["idDatFinCop", "datFinCop"]),
+        matricule: getVal(["idMatricule", "matricule"]),
+        cin: getVal(["idNumCin", "cin"])
+    };
+
+    let code = "";
+    if (editIndexParam !== null) {
+        students[editIndexParam] = student;
+        code = "mdf";
+    } else {
+        students.push(student);
+        code = "ajt";
     }
-    return "";
-};
+    // ajout et modification
 
-// ===== CERTIFICATS =====
-const checked = (id) => { const el = document.getElementById(id); return el ? el.checked : false; };
-const certStr = (ids) => ids.map(id => checked(id) ? id.slice(-1) : '').join('');
+    try {
+        const dataToSend = {
+            matricule: student.matricule,
+            nom: student.nom,
+            prenom: student.prenom,
+            dateNaissance: student.dateNais,
+            dateEntree: student.dateEntree,
+            email: student.email,
+            telephone: student.tel,
+            facebook: student.facebook,
+            niveau: student.niveau,
+            totalAPayer: student.totalAPayer,
+            montantPaye: student.montantPaye,
+            A1: student.a1,
+            A2: student.a2,
+            B1: student.b1,
+            B2: student.b2,
+            C1: student.c1,
+            C2: student.c2,
+            Code: code,
+            Adresse: student.adresse,
+            Paramede: student.paramede,
+            numPassport: student.passport,
+            expPassport: student.datFinCop,
+            numCop: student.numCop,
+            expCop: student.datFinCop,
+            cin: student.cin
+        };
 
-let student = {
-    id: editIndexParam !== null ? students[editIndexParam].id : Date.now(),
-    nom: getVal(["idNom", "nom"]),
-    prenom: getVal(["idPrenom", "prenom"]),
-    dateNais: getVal(["idDateNais", "dateNais"]),
-    email: getVal(["idEmail", "email"]),
-    tel: getVal(["idTel", "tel"]),
-    adresse: getVal(["idAdresse", "adresse"]),
-    niveau: getVal(["idNiveau", "niveau"]),
-    a1: checked("A1"),
-    a2: checked("A2"),
-    c1: certStr(["C1L", "C1H", "C1M", "C1S"]),
-    c2: certStr(["C2L", "C2H", "C2M", "C2S"]),
-    b1: certStr(["B1L", "B1H", "B1M", "B1S"]),
-    b2: certStr(["B2L", "B2H", "B2M", "B2S"]),
-    paramede: checked("idParamede"),
-    passport: getVal(["idNumPass", "passport"]),
-    datFinPass: getVal(["idDatFinPass", "datFinPass"]),
-    numCop: getVal(["idNumCop", "numCop"]),
-    datFinCop: getVal(["idDatFinCop", "datFinCop"]),
-    matricule: getVal(["idMatricule", "matricule"]),
-    cin: getVal(["idNumCin", "cin"])
-};
+        const res = await fetch(Ajout_mofif_webhook, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dataToSend)
+        });
 
-if (editIndexParam !== null) {
-    students[editIndexParam] = student;
-} else {
-    students.push(student);
-}
-localStorage.setItem("studentsData", JSON.stringify(students));
+        const text = await res.json();
 
-localStorage.removeItem("studentToEdit");
-localStorage.removeItem("editIndex");
-window.location.href = "list.html";
+        if (text.success) {
+            console.log("success");
+            localStorage.removeItem("studentsData");
+            localStorage.setItem("studentsData", JSON.stringify(students));
+            localStorage.removeItem("studentToEdit");
+            localStorage.removeItem("editIndex");
+            window.location.href = "list.html";
+        }
+
+        alert("Étudiant ajouté ✅");
+
+        window.location.href = "list.html";
+
+    } catch (error) {
+        console.log(error);
+        alert("Erreur ❌");
+    }
+
+
 }
 
 
@@ -201,7 +273,7 @@ function filterStudents() {
     const query = document.getElementById("searchInput").value.toLowerCase();
     const a1Only = document.getElementById("filterA1").checked;
     const a2Only = document.getElementById("filterA2").checked;
-    
+
     // Récupérer les modules cochés pour chaque certificat (Vertical Checkboxes)
     const getCheckedModules = (className) => {
         const checked = document.querySelectorAll(`.${className}:checked`);
@@ -215,9 +287,9 @@ function filterStudents() {
 
     const filtered = students.filter(s => {
         // Recherche textuelle
-        const matchesText = 
-            s.nom.toLowerCase().includes(query) || 
-            s.prenom.toLowerCase().includes(query) || 
+        const matchesText =
+            s.nom.toLowerCase().includes(query) ||
+            s.prenom.toLowerCase().includes(query) ||
             (s.cin && s.cin.toLowerCase().includes(query));
 
         if (!matchesText) return false;
@@ -247,11 +319,11 @@ function filterStudents() {
 
 // ===== MODIFIER =====
 
-function editStudent(index){
-let student = students[index];
-localStorage.setItem("studentToEdit", JSON.stringify(student));
-localStorage.setItem("editIndex", index);
-window.location.href = "index.html";
+function editStudent(index) {
+    let student = students[index];
+    localStorage.setItem("studentToEdit", JSON.stringify(student));
+    localStorage.setItem("editIndex", index);
+    window.location.href = "index.html";
 }
 
 
@@ -274,11 +346,11 @@ function resetForm() {
 // ===== SUPPRIMER =====
 
 function deleteStudent(index) {
-if (confirm("Supprimer cet étudiant ?")) {
-students.splice(index, 1);
-localStorage.setItem("studentsData", JSON.stringify(students));
-displayStudents();
-}
+    if (confirm("Supprimer cet étudiant ?")) {
+        students.splice(index, 1);
+        localStorage.setItem("studentsData", JSON.stringify(students));
+        displayStudents();
+    }
 }
 
 
@@ -335,10 +407,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const setCheck = (id, val) => { const el = document.getElementById(id); if (el) el.checked = val; };
         setCheck("A1", !!student.a1);
         setCheck("A2", !!student.a2);
-        ["C1L","C1H","C1M","C1S"].forEach(id => setCheck(id, (student.c1 || "").includes(id.slice(-1))));
-        ["C2L","C2H","C2M","C2S"].forEach(id => setCheck(id, (student.c2 || "").includes(id.slice(-1))));
-        ["B1L","B1H","B1M","B1S"].forEach(id => setCheck(id, (student.b1 || "").includes(id.slice(-1))));
-        ["B2L","B2H","B2M","B2S"].forEach(id => setCheck(id, (student.b2 || "").includes(id.slice(-1))));
+        ["C1L", "C1H", "C1M", "C1S"].forEach(id => setCheck(id, (student.c1 || "").includes(id.slice(-1))));
+        ["C2L", "C2H", "C2M", "C2S"].forEach(id => setCheck(id, (student.c2 || "").includes(id.slice(-1))));
+        ["B1L", "B1H", "B1M", "B1S"].forEach(id => setCheck(id, (student.b1 || "").includes(id.slice(-1))));
+        ["B2L", "B2H", "B2M", "B2S"].forEach(id => setCheck(id, (student.b2 || "").includes(id.slice(-1))));
         setCheck("idParamede", !!student.paramede);
 
         // Change le texte du bouton Soumettre en Modifier
