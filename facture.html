@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facturation - Paiement</title>
+</head>
+<body class="bg-[#f3f4f6] min-h-screen flex flex-col font-sans text-gray-800">
+
+  <!-- Global Top Navigation Header -->
+  <header class="sticky top-0 z-50 w-full h-[70px] bg-[#1e3a8a] shadow-md flex items-center justify-between px-6 shrink-0">
+    <!-- Left Section -->
+    <div class="flex items-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      <span class="text-white font-bold text-[18px]">Gestion Étudiants</span>
+    </div>
+
+    <!-- Right Section -->
+    <nav class="flex items-center gap-4">
+      <a href="index.html" class="px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 text-white flex items-center gap-2 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+        </svg>
+        Ajouter Étudiant
+      </a>
+      <a href="list.html" class="px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 text-white flex items-center gap-2 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+        </svg>
+        Liste des Étudiants
+      </a>
+      <a href="list-facture.html" class="px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 text-white flex items-center gap-2 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Factures
+      </a>
+    </nav>
+  </header>
+
+  <main class="flex-grow flex justify-center p-4">
+    <div class="mt-[30px] self-start bg-white rounded-[16px] shadow-lg w-full max-w-4xl flex flex-col max-h-[90vh] overflow-hidden">
+      
+      <!-- Top Blue Header Section -->
+      <div class="bg-gradient-to-r from-[#1e40af] to-[#2563eb] px-6 py-6 text-white shrink-0 flex items-center justify-between">
+        <div>
+          <h1 class="text-[24px] font-bold m-0 leading-tight">Système de Paiement</h1>
+          <p class="text-sm text-blue-100 mt-1 mb-0">Gestion des factures et règlements</p>
+        </div>
+        <div class="bg-white/20 px-4 py-2 rounded-lg backdrop-blur-sm">
+          <span class="text-xs uppercase font-bold tracking-wider opacity-80">Réf:</span>
+          <span id="displayRef" class="font-mono font-bold ml-1">---</span>
+        </div>
+      </div>
+
+      <!-- Scrollable content -->
+      <div class="p-[24px] overflow-y-auto grow">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          <!-- LEFT: Forms -->
+          <div class="lg:col-span-2 space-y-8">
+            
+            <!-- SECTION - Student Information (readonly) -->
+            <div>
+              <div class="flex items-center gap-2 mb-4 text-[#1e3a8a]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10.394 2.827a1 1 0 00-.788 0l-7 3a1 1 0 000 1.846l7 3a1 1 0 00.788 0l7-3a1 1 0 000-1.846l-7-3z" />
+                  <path d="M3 10.746v3.347a1 1 0 00.448.832l7 4.667a1 1 0 001.104 0l7-4.667a1 1 0 00.448-.832v-3.347l-7 3a1 1 0 00-.788 0l-7-3z" />
+                </svg>
+                <h2 class="text-lg font-bold">Informations Étudiant</h2>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Matricule</label>
+                  <input type="text" id="matricule" readonly class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Niveau</label>
+                  <input type="text" id="niveau" readonly class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Nom</label>
+                  <input type="text" id="nom" readonly class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Prénom</label>
+                  <input type="text" id="prenom" readonly class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none">
+                </div>
+              </div>
+            </div>
+
+            <hr class="border-gray-100">
+
+            <!-- SECTION - Invoice Information -->
+            <div>
+              <div class="flex items-center gap-2 mb-4 text-[#1e3a8a]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                </svg>
+                <h2 class="text-lg font-bold">Détails de la Facture</h2>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Référence</label>
+                  <input type="text" id="reference" readonly class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Date Facture</label>
+                  <input type="text" id="dateFacture" readonly class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Nombre de Paiements</label>
+                  <input type="text" id="paymentNumber" readonly class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Mode de Paiement</label>
+                  <select id="modePaiement" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all">
+                    <option value="paiement">Espèces (Cash)</option>
+                    <option value="mobile money">Mobile Money</option>
+                    <option value="virement bancaire">Virement Bancaire</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <hr class="border-gray-100">
+
+            <!-- SECTION - New Payment -->
+            <div id="paymentFormSection" class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
+              <div class="flex items-center gap-2 mb-4 text-[#2563eb]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                </svg>
+                <h2 class="text-lg font-bold">Enregistrer un Nouveau Règlement</h2>
+              </div>
+              <div class="max-w-md">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Montant du versement (Ar)</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <span class="text-gray-500 font-bold">Ar</span>
+                  </div>
+                  <input type="number" id="nouveauPaiement" placeholder="0.00" class="w-full pl-12 pr-4 py-3 rounded-xl border border-blue-200 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none text-xl font-bold transition-all shadow-sm">
+                </div>
+              </div>
+              <button onclick="enregistrerPaiement()" class="mt-6 w-full md:w-auto px-8 py-3 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Enregistrer Paiement
+              </button>
+            </div>
+          </div>
+
+          <!-- RIGHT: Summary Card -->
+          <div class="lg:col-span-1">
+            <div class="sticky top-0 bg-[#1e3a8a] text-white rounded-2xl p-6 shadow-xl space-y-6">
+              <h3 class="text-lg font-bold border-b border-white/10 pb-4">Résumé de l'État</h3>
+              
+              <div class="space-y-4">
+                <div>
+                  <span class="text-xs uppercase font-bold text-white/60 block mb-1">Total à Payer</span>
+                  <div class="text-2xl font-black"><span id="totalAPayer">0</span> <small class="text-sm font-normal opacity-70">Ar</small></div>
+                </div>
+                
+                <div>
+                  <span class="text-xs uppercase font-bold text-white/60 block mb-1">Déjà Réglé</span>
+                  <div class="text-2xl font-black text-green-400"><span id="dejaPayer">0</span> <small class="text-sm font-normal opacity-70">Ar</small></div>
+                </div>
+                
+                <div class="pt-4 border-t border-white/10 mt-4">
+                  <span class="text-xs uppercase font-bold text-white/60 block mb-1">Reste à Payer</span>
+                  <div class="text-3xl font-black text-orange-400"><span id="reste">0</span> <small class="text-sm font-normal opacity-70">Ar</small></div>
+                </div>
+              </div>
+
+              <div id="statusBadge" class="p-3 rounded-lg bg-white/10 text-center font-bold text-sm uppercase tracking-widest mt-6">
+                En attente
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Payment History Table (Optional but good for UX) -->
+        <div class="mt-12">
+          <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+            </svg>
+            Historique des Règlements
+          </h2>
+          <div class="overflow-hidden border border-gray-200 rounded-xl">
+            <table class="w-full text-left">
+              <thead class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                <tr>
+                  <th class="p-4">N°</th>
+                  <th class="p-4">Date</th>
+                  <th class="p-4">Mode</th>
+                  <th class="p-4">Montant (Ar)</th>
+                </tr>
+              </thead>
+              <tbody id="paymentHistory" class="divide-y divide-gray-100 text-sm">
+                <!-- Rows will be added by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="facture.js"></script>
+</body>
+</html>

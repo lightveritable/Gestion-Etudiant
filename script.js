@@ -91,6 +91,12 @@ function displayStudents(dataToDisplay = students) {
     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
     Supprimer
   </button>
+  <button
+  onclick="goToFacture(${originalIndex})"
+  class="flex items-center justify-center gap-1.5 px-[12px] py-[6px] rounded-[8px] bg-white border border-[#16a34a] text-[#16a34a] hover:bg-green-50 transition-colors font-medium text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.8-2.8l-4.3 4.2c-.3.2-.6.3-1 .3H11"/><path d="M15 9h.01"/><path d="M16 5h.01"/></svg>
+    Paiement
+  </button>
 </div>
 </td>
 </tr>
@@ -422,3 +428,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+function goToFacture(index) {
+    let studentsData = JSON.parse(localStorage.getItem("studentsData"));
+    let student = studentsData[index];
+    localStorage.setItem("selectedStudent", JSON.stringify(student));
+    window.location.href = "facture.html";
+}
