@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formulaire étudiants</title>
+</head>
+
+<body class="bg-[#f3f4f6] min-h-screen flex flex-col font-sans text-gray-800">
+
+  <!-- Global Top Navigation Header -->
+  <header class="sticky top-0 z-50 w-full h-[70px] bg-[#1e3a8a] shadow-md flex items-center justify-between px-6 shrink-0">
+    <!-- Left Section -->
+    <div class="flex items-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      <span class="text-white font-bold text-[18px]">Gestion Étudiants</span>
+    </div>
+
+    <!-- Right Section -->
+    <nav class="flex items-center gap-4">
+      <a href="index.html" class="px-4 py-2 rounded-lg bg-[#2563eb] text-white font-semibold flex items-center gap-2 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+        </svg>
+        Ajouter Étudiant
+      </a>
+      <a href="list.html" class="px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 text-white flex items-center gap-2 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+        </svg>
+        Liste des Étudiants
+      </a>
+    </nav>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="flex-grow flex justify-center p-4">
+    <!-- Form Container -->
+  <div class="mt-[30px] self-start bg-white rounded-[16px] shadow-lg w-full max-w-3xl flex flex-col max-h-[90vh] overflow-hidden">
+    
+    <!-- Top Blue Header Section -->
+    <div class="bg-gradient-to-r from-[#1e40af] to-[#2563eb] px-6 py-6 text-white shrink-0">
+      <h1 class="text-[24px] font-bold m-0 leading-tight">
+        Ajouter un Étudiant
+      </h1>
+      <p class="text-sm text-blue-100 mt-1 mb-0">Remplissez les informations ci-dessous</p>
+    </div>
+
+    <!-- Scrollable content -->
+    <div class="p-[24px] overflow-y-auto grow">
+      <form>
+        <!-- Nom & Prénom -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label for="idNom" class="block font-medium mb-1">Nom</label>
+            <input type="text" id="idNom" name="nom" placeholder="Ex: Rakoto" required
+              class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-[#f9fafb] focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all" />
+          </div>
+          <div>
+            <label for="idPrenom" class="block font-medium mb-1">Prénom</label>
+            <input type="text" name="prenom" id="idPrenom" placeholder="Ex: Jean" required
+              class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-[#f9fafb] focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all" />
+          </div>
+        </div>
+
+        <!-- Matricule & Date de naissance -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label for="idMatricule" class="block font-medium mb-1">Matricule</label>
+            <input type="number" name="matricule" id="idMatricule" placeholder="Ex: ETU001"
+              class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-[#f9fafb] focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all" />
+          </div>
+          <div>
+            <label for="idDateNais" class="block font-medium mb-1">Date de naissance</label>
+            <input type="date" name="dateNais" id="idDateNais" required
+              class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-[#f9fafb] focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all" />
+          </div>
+        </div>
+
+        <!-- CIN & Niveau -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label for="idNumCin" class="block font-medium mb-1">CIN</label>
+            <input type="text" id="idNumCin" placeholder="Numero du CIN"
+              class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-[#f9fafb] focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all">
+          </div>
+          <div>
+            <label for="idNiveau" class="block font-medium mb-1">Niveau</label>
+            <select name="Niveau" id="idNiveau"
+              class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-[#f9fafb] focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none transition-all">
+              <option value="A1">A1</option>
+              <option value="A2">A2</option>
+              <option value="B1">B1</option>
+              <option value="B2">B2</option>
+              <option value="C1">C1</option>
+              <option value="C2">C2</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Email & Téléphone -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label for="idEmail" class="block font-medium mb-1">Email</label>
+            <input type="email" name="email" id="idEmail" placeholder="Ex: jean@mail.com" required
+              class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-[#f9fafb] focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all" />
+          </div>
+          <div>
+            <label for="idTel" class="block font-medium mb-1">Téléphone</label>
+            <input type="tel" name="tel" id="idTel" placeholder="Ex: 0340000000" required
+              class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-[#f9fafb] focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all" />
+          </div>
+        </div>
+
+        <!-- Adresse -->
+        <div class="mb-6">
+          <label for="idAdresse" class="block font-medium mb-1">Adresse</label>
+          <input type="text" name="adresse" id="idAdresse" placeholder="Adresse complète" required
+            class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-[#f9fafb] focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all" />
+        </div>
+
+        <!-- Grid for extra details (Certificat, Passport, etc) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <!-- Column 1 -->
+          <div>
+            <label for="idCertif" class="block font-medium mb-2">Certificat :</label>
+            <!-- Checkbox Section Container -->
+            <div name="Certif" id="idCertif"
+              class="border border-dashed border-[#d1d5db] rounded-[12px] p-4 text-sm bg-white mb-4">
+              
+              <div class="flex items-center gap-4 mb-3">
+                <label class="flex items-center gap-1 cursor-pointer">
+                  A1 <input id="A1" type="checkbox" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                </label>
+                <label class="flex items-center gap-1 cursor-pointer">
+                  A2 <input id="A2" type="checkbox" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                </label>
+              </div>
+
+              <div class="space-y-3">
+                <div class="flex items-center gap-1">
+                  <label class="font-medium inline-block w-5">C1</label>
+                  <input type="checkbox" id="C1L" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="C1H" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="C1M" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="C1S" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                </div>
+                <div class="flex items-center gap-1">
+                  <label class="font-medium inline-block w-5">C2</label>
+                  <input type="checkbox" id="C2L" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="C2H" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="C2M" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="C2S" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                </div>
+                <div class="flex items-center gap-1">
+                  <label class="font-medium inline-block w-5">B1</label>
+                  <input type="checkbox" id="B1L" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="B1H" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="B1M" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="B1S" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                </div>
+                <div class="flex items-center gap-1">
+                  <label class="font-medium inline-block w-5">B2</label>
+                  <input type="checkbox" id="B2L" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="B2H" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="B2M" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                  <input type="checkbox" id="B2S" class="w-4 h-4 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[#2563eb]">
+                </div>
+                <div class="text-xs text-gray-500 font-medium pt-1">M: L H M S</div>
+              </div>
+            </div>
+
+            <!-- Paramède -->
+            <label class="flex items-center gap-2 font-medium mb-3 cursor-pointer">
+              <input type="checkbox" id="idParamede"
+                class="w-5 h-5 text-[#2563eb] border-[#d1d5db] rounded focus:ring-[3px] focus:ring-[#bfdbfe] transition-all">
+              <span>Paramède</span>
+            </label>
+            
+
+          </div>
+
+          <!-- Column 2: Passports & remaining items -->
+          <div class="flex flex-col gap-6">
+            <!-- Passport -->
+            <div>
+              <label class="block font-medium mb-2">Passport</label>
+              <div class="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                <div class="mb-3">
+                  <label class="block text-sm font-medium mb-1 text-gray-600">Numéro :</label>
+                  <input type="text" name="numPass" id="idNumPass" placeholder="Numéro du passport"
+                    class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-white focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-1 text-gray-600">Date d'éxpiration :</label>
+                  <input type="date" name="datFinPass" id="idDatFinPass"
+                    class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-white focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all">
+                </div>
+              </div>
+            </div>
+
+            <!-- Copia -->
+            <div>
+              <label class="block font-medium mb-2">Copia</label>
+              <div class="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                 <div class="mb-3">
+                  <label class="block text-sm font-medium mb-1 text-gray-600">Numéro :</label>
+                  <input type="text" name="numCop" id="idNumCop" placeholder="Numéro du copia"
+                    class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-white focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-1 text-gray-600">Date d'éxpiration :</label>
+                  <input type="date" name="datFinCop" id="idDatFinCop"
+                    class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-white focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all">
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+        <!-- Boutons -->
+        <div class="pt-4 border-t border-gray-100">
+          <div class="flex flex-col sm:flex-row gap-4">
+            <button id="submitBtn" onclick="sendData()" class="h-[44px] px-[20px] rounded-[10px] bg-[#22c55e] hover:bg-[#16a34a] text-white font-semibold transition-colors flex-1 sm:flex-none">
+              Soumettre
+            </button>
+            <button type="reset" onclick="resetForm()" class="h-[44px] px-[20px] rounded-[10px] bg-[#ef4444] hover:bg-[#dc2626] text-white font-semibold transition-colors flex-1 sm:flex-none">
+              Annuler
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  </main>
+  <script>
+    const modal = document.getElementById("modal");
+    if(modal) {
+      const closeBtn = document.getElementById("closeModal");
+      if(closeBtn) {
+        closeBtn.addEventListener("click", () => {
+          modal.classList.add("hidden");
+        });
+      }
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.classList.add("hidden");
+        }
+      });
+    }
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>
