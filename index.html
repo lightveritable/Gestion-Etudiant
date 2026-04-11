@@ -21,12 +21,12 @@
 
     <!-- Right Section -->
     <nav class="flex items-center gap-4">
-      <a href="index.html" class="px-4 py-2 rounded-lg bg-[#2563eb] text-white font-semibold flex items-center gap-2 transition-colors">
+      <boutton onclick="btnAjout()" class="px-4 py-2 rounded-lg bg-[#2563eb] text-white font-semibold flex items-center gap-2 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
         </svg>
         Ajouter Étudiant
-      </a>
+      </boutton>
       <a href="list.html" class="px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 text-white flex items-center gap-2 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
@@ -89,6 +89,11 @@
           <div>
             <label for="idNumCin" class="block font-medium mb-1">CIN</label>
             <input type="text" id="idNumCin" placeholder="Numero du CIN"
+              class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-[#f9fafb] focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all">
+          </div>
+          <div>
+            <label for="idfcbk" class="block font-medium mb-1">Facebook</label>
+            <input type="text" id="idfcbk" placeholder="Nom sur facebook"
               class="h-[48px] w-full px-[14px] rounded-[10px] border border-[#d1d5db] bg-[#f9fafb] focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#bfdbfe] focus:outline-none placeholder-[#9ca3af] transition-all">
           </div>
           <div>

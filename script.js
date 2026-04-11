@@ -1,5 +1,13 @@
 
 
+function btnAjout(){
+    let students = JSON.parse(localStorage.getItem("studentsData"));
+    //localStorage.removeItem("Mtrcl");
+    localStorage.setItem("Mtrcl", students[students.length -1].matricule + 1);
+    document.getElementById("idMatricule").value = localStorage.getItem("Mtrcl")
+    location.href = "index.html";
+}
+
 const ETUDIENT_WEBHOOK = "https://hook.us2.make.com/pu7n7c9lh533ckeftgk7t7e83ls4o8sx";
 async function fetchStudents() {
     const res = await fetch(ETUDIENT_WEBHOOK, {
@@ -199,7 +207,8 @@ async function ajoutermodifierEtudiant(event) {
         numCop: getVal(["idNumCop", "numCop"]),
         datFinCop: getVal(["idDatFinCop", "datFinCop"]),
         matricule: getVal(["idMatricule", "matricule"]),
-        cin: getVal(["idNumCin", "cin"])
+        cin: getVal(["idNumCin", "cin"]),
+        facebook: getVal(["idfcbk", "facebook"])
     };
 
     let code = "";
@@ -238,7 +247,8 @@ async function ajoutermodifierEtudiant(event) {
             expPassport: student.datFinCop,
             numCop: student.numCop,
             expCop: student.datFinCop,
-            cin: student.cin
+            cin: student.cin,
+            facebook: student.facebook
         };
 
         const res = await fetch(Ajout_mofif_webhook, {
@@ -257,12 +267,9 @@ async function ajoutermodifierEtudiant(event) {
             localStorage.setItem("studentsData", JSON.stringify(students));
             localStorage.removeItem("studentToEdit");
             localStorage.removeItem("editIndex");
+            alert("Étudiant ajouté ✅");
             window.location.href = "list.html";
         }
-
-        alert("Étudiant ajouté ✅");
-
-        window.location.href = "list.html";
 
     } catch (error) {
         console.log(error);
@@ -365,10 +372,11 @@ function deleteStudent(index) {
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("form");
+    
     if (form) {
         form.addEventListener("submit", (e) => {
             e.preventDefault();
-            sendData();
+            ajoutermodifierEtudiant();
         });
     }
 
@@ -399,7 +407,8 @@ document.addEventListener("DOMContentLoaded", () => {
             numCop: ["numCop", "idNumCop"],
             datFinCop: ["datFinCop", "idDatFinCop"],
             matricule: ["matricule", "idMatricule"],
-            cin: ["cin", "idNumCin"]
+            cin: ["cin", "idNumCin"],
+            facebook: ["facebook", "idfcbk"],
         };
 
         for (let key in fields) {
@@ -426,6 +435,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.textContent = "Modifier";
             }
         });
+    }else if (localStorage.getItem("Mtrcl")){
+        document.getElementById("idMatricule").value = localStorage.getItem("Mtrcl");
     }
 });
 
@@ -434,4 +445,4 @@ function goToFacture(index) {
     let student = studentsData[index];
     localStorage.setItem("selectedStudent", JSON.stringify(student));
     window.location.href = "facture.html";
-}
+}
