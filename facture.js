@@ -188,6 +188,35 @@ function enregistrerPaiement() {
     }
     localStorage.setItem("facturesData", JSON.stringify(factures));
 
+    // Send to Webhook (Make)
+    const dataToSend = {
+        reference: currentInvoice.reference,
+        dateFacture: currentInvoice.dateFacture,
+        matricule: currentInvoice.matricule,
+        nom: currentInvoice.nom,
+        prenom: currentInvoice.prenom,
+        niveau: currentInvoice.niveau,
+        montant: montant,
+        modePaiement: modePaiement,
+        raison: reason,
+        dejaPayer: currentInvoice.dejaPayer,
+        reste: currentInvoice.reste,
+        datePaiement: today
+    };
+
+    console.log("Webhook sent:", dataToSend);
+
+    fetch("https://hook.us2.make.com/a8w23dlsuw54ey3878vv7yms0i71ot4o", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dataToSend)
+    })
+    .catch(error => {
+        console.error("Webhook error:", error);
+    });
+
     // 5. Clear input and refresh UI
     montantInput.value = "";
     fillFactureForm(currentInvoice);
