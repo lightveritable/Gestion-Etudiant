@@ -222,8 +222,8 @@ function enregistrerPaiement() {
         const text = await res.json();
 
         if (text.success) {
-            alert("success");;
-        }else{
+            alert("success");
+        } else {
             alert("echec");
         }
     }
