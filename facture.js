@@ -126,6 +126,7 @@ function updateStatusBadge(reste) {
 function enregistrerPaiement() {
     const montantInput = document.getElementById("nouveauPaiement");
     const modePaiement = document.getElementById("modePaiement").value;
+    const reason = document.getElementById("idReason").value || "Acompte";
     const montant = parseFloat(montantInput.value);
 
     // 1. Validate payment amount
@@ -151,7 +152,8 @@ function enregistrerPaiement() {
             dejaPayer: 0,
             reste: 400000,
             paymentNumber: 0,
-            payments: []
+            payments: [],
+            reason: reason
         };
         // Don't push yet, wait to update amounts
     }
@@ -218,6 +220,7 @@ function renderFacturesTable() {
                 <td class="p-4 text-sm font-semibold text-gray-800">${f.matricule}</td>
                 <td class="p-4 text-sm text-gray-700">${f.nom}</td>
                 <td class="p-4 text-sm text-gray-700">${f.prenom}</td>
+                <td class="p-4 text-sm text-gray-700">${f.reason}</td>
                 <td class="p-4 text-sm text-gray-600 text-center"><span class="px-2 py-0.5 rounded bg-gray-100">${f.niveau}</span></td>
                 <td class="p-4 text-sm font-bold text-gray-900">${f.totalAPayer.toLocaleString()}</td>
                 <td class="p-4 text-sm font-bold text-green-600">${f.dejaPayer.toLocaleString()}</td>
