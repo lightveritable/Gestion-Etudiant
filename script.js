@@ -2,9 +2,11 @@
 
 function btnAjout(){
     let students = JSON.parse(localStorage.getItem("studentsData"));
-    //localStorage.removeItem("Mtrcl");
-    localStorage.setItem("Mtrcl", students[students.length -1].matricule + 1);
-    document.getElementById("idMatricule").value = localStorage.getItem("Mtrcl")
+    if (localStorage.getItem("Mtrcl")) {
+        localStorage.removeItem("Mtrcl");
+        console.log("Mtrcl removed");
+    }
+    localStorage.setItem("Mtrcl",parseInt(students[students.length -1].matricule)+1);
     location.href = "index.html";
 }
 
