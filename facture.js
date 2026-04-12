@@ -145,7 +145,7 @@ async function enregistrerPaiement() {
 
     // 2. Prepare temporary invoice state
     let tempInvoice = currentInvoice ? JSON.parse(JSON.stringify(currentInvoice)) : null;
-    
+
     if (!tempInvoice) {
         const today = new Date().toLocaleDateString('fr-CA');
         // Synchronize with totalAPayer and montantPaye from student list
@@ -183,22 +183,21 @@ async function enregistrerPaiement() {
     const nextReste = tempInvoice.totalAPayer - nextDejaPayer;
 
     const dataToSend = {
-        reference: tempInvoice.reference,
-        matricule: tempInvoice.matricule,
-        nom: tempInvoice.nom,
-        prenom: tempInvoice.prenom,
-        niveau: tempInvoice.niveau,
-        
-        totalAPayer: tempInvoice.totalAPayer,
-        montantPaye: nextDejaPayer,
-        paiement: nextReste <= 0 ? "PAYE" : "EN COURS",
-        reste: nextReste,
-
-        montant: montant,
-        modePaiement: modePaiement,
-        raison: reason,
-        numeroPaiement: nextPaymentNumber,
-        datePaiement: today
+        reference: tempInvoice.reference,     // Col A
+        matricule: tempInvoice.matricule,     // Col B
+        nom: tempInvoice.nom,                 // Col C
+        prenom: tempInvoice.prenom,           // Col D
+        niveau: tempInvoice.niveau,           // Col E
+        TotalApayer: tempInvoice.totalAPayer, // Col F
+        montantPaye: nextDejaPayer,           // Col G
+        Aktuell_pay: montant,                 // Col H
+        paiement: nextReste <= 0 ? "PAYE" : "EN COURS", // Col I
+        DejatPayer: nextDejaPayer,            // Col J
+        reste: nextReste,                     // Col K
+        modePaiement: modePaiement,           // Col L
+        raison: reason,                       // Col M
+        numeroPaiemen: nextPaymentNumber,     // Col N
+        datePaiement: today                    // Col O
     };
 
     // 4. Send to Webhook with Timeout Protection
@@ -207,8 +206,8 @@ async function enregistrerPaiement() {
 
     try {
         console.log("Sending to Webhook:", dataToSend);
-        
-        const response = await fetch("https://hook.us2.make.com/m6nfkmn9dqk1v7m8loousmni1iqpsqpk", {
+
+        const response = await fetch("https://hook.us2.make.com/jpylueiuew4elziiderefx1rdvld51dn", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dataToSend),
@@ -222,10 +221,10 @@ async function enregistrerPaiement() {
         }
 
         const result = await response.json();
-        
+
         // Ensure backend explicitly confirmed success
         if (result && result.success === false) {
-             throw new Error("Webhook returned success:false");
+            throw new Error("Webhook returned success:false");
         }
 
         console.log("Webhook success confirmed");
@@ -266,56 +265,94 @@ async function enregistrerPaiement() {
 
 // --- LIST FACTURES PAGE LOGIC ---
 
+let allFactures = []; // Global storage for webhook data
+
 function initListFacturePage() {
     renderFacturesTable();
 }
 
-function renderFacturesTable() {
+async function renderFacturesTable() {
     const tbody = document.getElementById("facturesTable");
     if (!tbody) return;
 
-    const factures = JSON.parse(localStorage.getItem("facturesData") || "[]");
-    tbody.innerHTML = "";
+    // Show loading state
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="14" class="p-12 text-center">
+                <div class="flex flex-col items-center justify-center gap-3">
+                    <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-gray-500 font-medium">Chargement des archives depuis le serveur...</p>
+                </div>
+            </td>
+        </tr>
+    `;
 
-    if (factures.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-gray-400 italic">Aucune facture enregistrée (Payez un acompte pour créer une facture).</td></tr>`;
-        return;
-    }
+    try {
+        const response = await fetch("https://hook.us2.make.com/3xpwsogtxqlqiiw1f9xnji1hl75x04c6");
 
-    factures.forEach((f, index) => {
-        const row = `
-            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                <td class="p-4 font-mono text-xs font-bold text-blue-600">${f.reference}</td>
-                <td class="p-4 text-sm text-gray-600">${f.dateFacture}</td>
-                <td class="p-4 text-sm font-semibold text-gray-800">${f.matricule}</td>
-                <td class="p-4 text-sm text-gray-700">${f.nom}</td>
-                <td class="p-4 text-sm text-gray-700">${f.prenom}</td>
-                <td class="p-4 text-sm text-gray-700">${f.reason}</td>
-                <td class="p-4 text-sm text-gray-600 text-center"><span class="px-2 py-0.5 rounded bg-gray-100">${f.niveau}</span></td>
-                <td class="p-4 text-sm font-bold text-gray-900">${f.totalAPayer.toLocaleString()}</td>
-                <td class="p-4 text-sm font-bold text-green-600">${f.dejaPayer.toLocaleString()}</td>
-                <td class="p-4 text-sm font-black ${f.reste > 0 ? 'text-orange-600' : 'text-green-600'}">${f.reste.toLocaleString()}</td>
-                <td class="p-4">
-                    <div class="flex items-center gap-2">
-                        <button onclick="voirFacture('${f.matricule}')" class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                        <button onclick="exportFacturePDF(${index})" class="p-2 rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all shadow-sm flex items-center gap-1 text-[10px] font-bold">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                            PDF
-                        </button>
-                        <button onclick="supprimerFacture(${index})" class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                        </button>
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        allFactures = await response.json();
+        tbody.innerHTML = "";
+
+        if (!allFactures || allFactures.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="14" class="p-12 text-center text-gray-400 italic">Aucune facture trouvée sur le serveur.</td></tr>`;
+            return;
+        }
+
+        allFactures.forEach((f, index) => {
+            const row = `
+                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <td class="p-4 font-mono text-[10px] font-bold text-blue-600">${f.reference || "-"}</td>
+                    <td class="p-4 text-xs text-gray-600 whitespace-nowrap">${f.datePaiement || "-"}</td>
+                    <td class="p-4 text-sm font-semibold text-gray-800">${f.matricule || "-"}</td>
+                    <td class="p-4 text-sm text-gray-700">${f.nom || "-"}</td>
+                    <td class="p-4 text-sm text-gray-700">${f.prenom || "-"}</td>
+                    <td class="p-4 text-center"><span class="px-2 py-0.5 rounded bg-gray-100 text-[10px] whitespace-nowrap">${f.niveau || "-"}</span></td>
+                    <td class="p-4 text-xs text-gray-600">${f.raison || "-"}</td>
+                    <td class="p-4 text-xs text-gray-600">${f.modePaiement || "-"}</td>
+                    <td class="p-4 text-center text-xs text-gray-600 font-bold">${f.numeroPaiement || "-"}</td>
+                    <td class="p-4 text-center text-xs font-bold text-blue-600 bg-blue-50/50">${f.paiement || "0"}</td>
+                    <td class="p-4 text-sm font-bold text-green-600 whitespace-nowrap">${Number(f.montantPaye || 0).toLocaleString()} Ar</td>
+                    <td class="p-4 text-sm font-bold text-gray-900 whitespace-nowrap">${Number(f.totalAPayer || 0).toLocaleString()} Ar</td>
+                    <td class="p-4 text-sm font-black ${parseFloat(f.reste) > 0 ? 'text-orange-600' : 'text-green-600'} whitespace-nowrap">${Number(f.reste || 0).toLocaleString()} Ar</td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-1">
+                            <button onclick="voirFacture('${f.matricule}')" class="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Voir">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <button onclick="exportFacturePDF(${index})" class="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all shadow-sm flex items-center gap-1 text-[10px] font-bold" title="Exporter PDF">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            </button>
+                            <button onclick="supprimerFacture(${index})" class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Supprimer (Visuel)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+
+    } catch (error) {
+        console.error("Erreur Webhook:", error);
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="14" class="p-12 text-center text-red-500">
+                    <div class="flex flex-col items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                        <p class="font-bold text-lg">Impossible de charger les factures</p>
+                        <p class="text-sm opacity-70">Vérifiez votre connexion ou le statut du serveur.</p>
                     </div>
                 </td>
             </tr>
         `;
-        tbody.innerHTML += row;
-    });
+    }
 }
 
 function voirFacture(matricule) {
@@ -331,19 +368,24 @@ function voirFacture(matricule) {
 }
 
 function supprimerFacture(index) {
-    if (confirm("Voulez-vous vraiment supprimer cette facture ?")) {
-        let factures = JSON.parse(localStorage.getItem("facturesData") || "[]");
-        factures.splice(index, 1);
-        localStorage.setItem("facturesData", JSON.stringify(factures));
-        renderFacturesTable();
+    if (confirm("Voulez-vous vraiment retirer cette facture de l'affichage ? (Note: Cela ne la supprimera pas du serveur)")) {
+        allFactures.splice(index, 1);
+        // Refresh the table locally
+        const tbody = document.getElementById("facturesTable");
+        tbody.innerHTML = "";
+
+        allFactures.forEach((f, newIndex) => {
+            // Re-render essentially... 
+            // Better to just call a local render helper but for simplicity:
+            location.reload();
+        });
     }
 }
 
 function exportFacturePDF(index) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    const factures = JSON.parse(localStorage.getItem("facturesData") || "[]");
-    const f = factures[index];
+    const f = allFactures[index];
 
     if (!f) return;
 
@@ -374,21 +416,21 @@ function exportFacturePDF(index) {
     doc.text("Résumé:", 20, 105);
 
     doc.setFont("helvetica", "normal");
-    doc.text(`Total à payer: ${f.totalAPayer.toLocaleString()} Ar`, 25, 115);
-    doc.text(`Déjà payé: ${f.dejaPayer.toLocaleString()} Ar`, 25, 122);
-    doc.text(`Reste: ${f.reste.toLocaleString()} Ar`, 25, 129);
+    doc.text(`Total à payer: ${Number(f.totalAPayer || 0).toLocaleString()} Ar`, 25, 115);
+    doc.text(`Déjà payé: ${Number(f.montantPaye || 0).toLocaleString()} Ar`, 25, 122);
+    doc.text(`Reste: ${Number(f.reste || 0).toLocaleString()} Ar`, 25, 129);
 
     // Payment History Section
     doc.setFont("helvetica", "bold");
     doc.text("Historique des Paiements:", 20, 145);
 
-    // Table
-    const tableData = f.payments.map(p => [
-        p.numero,
-        p.date,
-        p.mode,
-        `${p.montant.toLocaleString()} Ar`
-    ]);
+    // Table (Using data from the object)
+    const tableData = [[
+        f.numeroPaiement || "1",
+        f.datePaiement || "-",
+        f.modePaiement || "-",
+        `${Number(f.montantPaye || 0).toLocaleString()} Ar`
+    ]];
 
     doc.autoTable({
         startY: 152,
