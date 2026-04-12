@@ -1,4 +1,38 @@
 
+function dateToISO(dateStr) {
+    if (!dateStr) return null;
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d.toISOString();
+}
+
+function isoToDate(dateStr) {
+    if (!dateStr) return "";
+    if (typeof dateStr === "string" && dateStr.includes("T")) {
+        return dateStr.split("T")[0];
+    }
+    return dateStr;
+}
+
+function calculateAge(dateStr) {
+    if (!dateStr) return "–";
+
+    let birthDate = new Date(dateStr);
+    let today = new Date();
+
+    if (isNaN(birthDate.getTime())) return "–";
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+        age--;
+    }
+
+    return age;
+}
 
 function btnAjout(){
     let students = JSON.parse(localStorage.getItem("studentsData"));
@@ -6,6 +40,8 @@ function btnAjout(){
         localStorage.removeItem("Mtrcl");
         console.log("Mtrcl removed");
     }
+    localStorage.removeItem("studentToEdit");
+    localStorage.removeItem("editIndex");
     localStorage.setItem("Mtrcl",parseInt(students[students.length -1].matricule)+1);
     location.href = "index.html";
 }
@@ -67,13 +103,15 @@ function displayStudents(dataToDisplay = students) {
 
         table.innerHTML += `
 <tr class="border-b border-[#e2e8f0] hover:bg-[#f8fafc] bg-white transition-colors">
+<td class="p-[14px] text-gray-700 font-bold">${s.matricule || '–'}</td>
 <td class="p-[14px] text-gray-700 font-medium">${s.nom}</td>
 <td class="p-[14px] text-gray-700">${s.prenom}</td>
-<td class="p-[14px] text-gray-700">${s.dateNais}</td>
+<td class="p-[14px] text-gray-700">${isoToDate(s.dateNaissance) || '–'}</td>
+<td class="p-[14px] text-gray-700 font-bold">${calculateAge(s.dateNaissance)}</td>
 <td class="p-[14px] text-gray-700">${s.cin || '–'}</td>
 <td class="p-[14px] text-gray-700">${s.email}</td>
-<td class="p-[14px] text-gray-700">${s.tel}</td>
-<td class="p-[14px] text-gray-700">${s.adresse}</td>
+<td class="p-[14px] text-gray-700">${s.telephone || '–'}</td>
+<td class="p-[14px] text-gray-700">${s.Adresse || '–'}</td>
 <td class="p-[14px] text-gray-700">${s.niveau}</td>
 <td class="p-[14px] text-gray-700">${s.montantAPayer ? (s.montantAPayer + " Ar") : "0 Ar"}</td>
 <td class="p-[14px] text-center text-gray-700">${s.a1 ? 'Oui' : 'Non'}</td>
@@ -84,9 +122,9 @@ function displayStudents(dataToDisplay = students) {
 <td class="p-[14px] text-gray-700 font-mono">${s.b2 || '–'}</td>
 <td class="p-[14px] text-center text-gray-700">${s.paramede ? 'Oui' : 'Non'}</td>
 <td class="p-[14px] text-gray-700">${s.passport || '–'}</td>
-<td class="p-[14px] text-gray-700">${s.datFinPass || '–'}</td>
+<td class="p-[14px] text-gray-700">${isoToDate(s.datFinPass) || '–'}</td>
 <td class="p-[14px] text-gray-700">${s.numCop || '–'}</td>
-<td class="p-[14px] text-gray-700">${s.datFinCop || '–'}</td>
+<td class="p-[14px] text-gray-700">${isoToDate(s.datFinCop) || '–'}</td>
 
 <td class="p-[14px]">
 <div class="flex items-center gap-3">
@@ -193,10 +231,10 @@ async function ajoutermodifierEtudiant(event) {
         id: editIndexParam !== null ? students[editIndexParam].id : Date.now(),
         nom: getVal(["idNom", "nom"]),
         prenom: getVal(["idPrenom", "prenom"]),
-        dateNais: getVal(["idDateNais", "dateNais"]),
+        dateNaissance: getVal(["idDateNais"]),
         email: getVal(["idEmail", "email"]),
-        tel: getVal(["idTel", "tel"]),
-        adresse: getVal(["idAdresse", "adresse"]),
+        telephone: getVal(["idTel"]),
+        Adresse: getVal(["idAdresse"]),
         niveau: getVal(["idNiveau", "niveau"]),
         montantAPayer: getVal(["idMontant", "montantAPayer"]),
         a1: checked("A1"),
@@ -230,10 +268,10 @@ async function ajoutermodifierEtudiant(event) {
             matricule: student.matricule,
             nom: student.nom,
             prenom: student.prenom,
-            dateNaissance: student.dateNais,
+            dateNaissance: dateToISO(student.dateNaissance),
             dateEntree: student.dateEntree,
             email: student.email,
-            telephone: student.tel,
+            telephone: student.telephone,
             facebook: student.facebook,
             niveau: student.niveau,
             totalAPayer: student.montantAPayer,
@@ -245,12 +283,12 @@ async function ajoutermodifierEtudiant(event) {
             C1: student.c1,
             C2: student.c2,
             Code: code,
-            Adresse: student.adresse,
+            Adresse: student.Adresse,
             Paramede: student.paramede,
             numPassport: student.passport,
-            expPassport: student.datFinCop,
+            expPassport: dateToISO(student.datFinPass),
             numCop: student.numCop,
-            expCop: student.datFinCop,
+            expCop: dateToISO(student.datFinCop),
             cin: student.cin,
             facebook: student.facebook
         };
@@ -355,6 +393,14 @@ function resetForm() {
     localStorage.removeItem("studentToEdit");
     localStorage.removeItem("editIndex");
 
+    // Réactive le champ matricule
+    let matriculeField = document.getElementById("idMatricule");
+    if (matriculeField) {
+        matriculeField.disabled = false;
+        matriculeField.classList.remove("bg-gray-100", "cursor-not-allowed");
+        matriculeField.title = "";
+    }
+
     // Réinitialise le verrou de soumission
     isSubmitting = false;
 }
@@ -401,10 +447,10 @@ document.addEventListener("DOMContentLoaded", () => {
         let fields = {
             nom: ["nom", "idNom"],
             prenom: ["prenom", "idPrenom"],
-            dateNais: ["dateNais", "idDateNais"],
+            dateNaissance: ["dateNaissance", "idDateNais"],
             email: ["email", "idEmail"],
-            tel: ["tel", "idTel"],
-            adresse: ["adresse", "idAdresse"],
+            telephone: ["telephone", "idTel"],
+            Adresse: ["Adresse", "idAdresse"],
             niveau: ["niveau", "idNiveau"],
             passport: ["passport", "idNumPass"],
             datFinPass: ["datFinPass", "idDatFinPass"],
@@ -419,7 +465,11 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let key in fields) {
             let el = document.getElementById(fields[key][0]) || document.getElementById(fields[key][1]);
             if (el) {
-                el.value = student[key];
+                let val = student[key] || "";
+                if (val && typeof val === "string" && val.includes("T")) {
+                    val = isoToDate(val);
+                }
+                el.value = val;
             }
         }
 
@@ -432,6 +482,14 @@ document.addEventListener("DOMContentLoaded", () => {
         ["B1L", "B1H", "B1M", "B1S"].forEach(id => setCheck(id, (student.b1 || "").includes(id.slice(-1))));
         ["B2L", "B2H", "B2M", "B2S"].forEach(id => setCheck(id, (student.b2 || "").includes(id.slice(-1))));
         setCheck("idParamede", !!student.paramede);
+
+        // Désactive le champ matricule lors de la modification
+        let matriculeField = document.getElementById("idMatricule");
+        if (matriculeField) {
+            matriculeField.disabled = true;
+            matriculeField.classList.add("bg-gray-100", "cursor-not-allowed");
+            matriculeField.title = "Le matricule ne peut pas être modifié.";
+        }
 
         // Change le texte du bouton Soumettre en Modifier
         let buttons = document.querySelectorAll("button");

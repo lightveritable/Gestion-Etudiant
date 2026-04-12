@@ -1,6 +1,7 @@
 // ===== EXPORT PDF =====
 
 const COLUMN_LABELS = {
+    matricule:   "Matricule",
     nom:        "Nom",
     prenom:     "Prénom",
     dateNais:   "Date de naissance",
@@ -20,7 +21,8 @@ const COLUMN_LABELS = {
     passport:   "Passport N°",
     datFinPass: "Exp. Passport",
     numCop:     "Copia N°",
-    datFinCop:  "Exp. Copia"
+    datFinCop:  "Exp. Copia",
+    age:        "Age"
 };
 
 function openExportModal() {
@@ -49,6 +51,9 @@ function exportPDF() {
     const headers = selectedKeys.map(key => COLUMN_LABELS[key] || key);
     const rows = students.map(s =>
         selectedKeys.map(key => {
+            if (key === 'age') {
+                return typeof calculateAge === 'function' ? calculateAge(s.dateNaissance) : '–';
+            }
             const val = s[key];
             if (key === 'a1' || key === 'a2' || key === 'paramede') return val ? 'Oui' : 'Non';
             return (val !== undefined && val !== '' && val !== null) ? val : '–';

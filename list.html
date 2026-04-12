@@ -156,9 +156,11 @@
         <table class="w-full text-left border-collapse min-w-[1200px]">
           <thead class="bg-[#f1f5f9] text-[#334155] border-b border-[#e2e8f0]">
             <tr>
+              <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Matricule</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Nom</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Prénom</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Naissance</th>
+              <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Age</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">CIN</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Email</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Téléphone</th>
@@ -201,6 +203,9 @@
       <!-- Checkboxes -->
       <div class="grid grid-cols-2 gap-3 mb-6">
         <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
+          <input type="checkbox" value="matricule" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Matricule
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
           <input type="checkbox" value="nom" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Nom
         </label>
         <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
@@ -208,6 +213,9 @@
         </label>
         <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
           <input type="checkbox" value="dateNais" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Date de naissance
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
+          <input type="checkbox" value="age" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Age
         </label>
         <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
           <input type="checkbox" value="cin" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> CIN
