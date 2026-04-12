@@ -123,7 +123,7 @@ function updateStatusBadge(reste) {
     }
 }
 
-function enregistrerPaiement() {
+async function enregistrerPaiement() {
     const montantInput = document.getElementById("nouveauPaiement");
     const modePaiement = document.getElementById("modePaiement").value;
     const reason = document.getElementById("idReason").value || "Acompte";
@@ -137,10 +137,12 @@ function enregistrerPaiement() {
 
     let factures = JSON.parse(localStorage.getItem("facturesData") || "[]");
 
-    // 2. If NO invoice exists yet, create it now
-    if (!currentInvoice) {
+    // 2. Prepare temporary invoice state
+    let tempInvoice = currentInvoice ? JSON.parse(JSON.stringify(currentInvoice)) : null;
+    
+    if (!tempInvoice) {
         const today = new Date().toLocaleDateString('fr-CA');
-        currentInvoice = {
+        tempInvoice = {
             id: Date.now(),
             reference: "FACT-" + Date.now(),
             dateFacture: today,
@@ -155,83 +157,84 @@ function enregistrerPaiement() {
             payments: [],
             reason: reason
         };
-        // Don't push yet, wait to update amounts
     }
 
-    if (montant > currentInvoice.reste) {
+    if (montant > tempInvoice.reste) {
         if (!confirm("Le montant dépasse le reste à payer. Continuer ?")) {
             return;
         }
     }
 
-    // 3. Update Invoice object
-    currentInvoice.paymentNumber++;
+    // 3. Prepare data for the webhook (Final state values)
     const today = new Date().toLocaleDateString('fr-CA');
+    const nextPaymentNumber = tempInvoice.paymentNumber + 1;
+    const nextDejaPayer = tempInvoice.dejaPayer + montant;
+    const nextReste = tempInvoice.totalAPayer - nextDejaPayer;
 
-    const newPayment = {
-        numero: currentInvoice.paymentNumber,
-        date: today,
-        mode: modePaiement,
-        montant: montant
-    };
-
-    currentInvoice.payments.push(newPayment);
-    currentInvoice.dejaPayer += montant;
-    currentInvoice.reste = currentInvoice.totalAPayer - currentInvoice.dejaPayer;
-
-    // 4. Save to localStorage
-    const index = factures.findIndex(f => f.matricule === currentInvoice.matricule);
-    if (index !== -1) {
-        factures[index] = currentInvoice;
-    } else {
-        factures.push(currentInvoice);
-    }
-    localStorage.setItem("facturesData", JSON.stringify(factures));
-
-    // Send to Webhook (Make)
     const dataToSend = {
-        reference: currentInvoice.reference,
-        dateFacture: currentInvoice.dateFacture,
-        matricule: currentInvoice.matricule,
-        nom: currentInvoice.nom,
-        prenom: currentInvoice.prenom,
-        niveau: currentInvoice.niveau,
+        reference: tempInvoice.reference,
+        dateFacture: tempInvoice.dateFacture,
+        matricule: tempInvoice.matricule,
+        nom: tempInvoice.nom,
+        prenom: tempInvoice.prenom,
+        niveau: tempInvoice.niveau,
         montant: montant,
         modePaiement: modePaiement,
         raison: reason,
-        dejaPayer: currentInvoice.dejaPayer,
-        reste: currentInvoice.reste,
+        dejaPayer: nextDejaPayer,
+        reste: nextReste,
         datePaiement: today
     };
 
-    console.log("Webhook sent:", dataToSend);
-
-    fetch("https://hook.us2.make.com/a8w23dlsuw54ey3878vv7yms0i71ot4o", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataToSend)
-    })
-
-
-        .catch(error => {
-            console.error("Webhook error:", error);
+    try {
+        console.log("Sending to Webhook:", dataToSend);
+        
+        const response = await fetch("https://hook.us2.make.com/a8w23dlsuw54ey3878vv7yms0i71ot4o", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dataToSend)
         });
-    async function hh() {
-        const text = await res.json();
 
-        if (text.success) {
-            alert("success");;
-        }else{
-            alert("echec");
+        if (!response.ok) {
+            throw new Error("Webhook response not OK");
         }
+
+        console.log("Webhook success");
+
+        // 4. Update Invoice object locally only after success
+        tempInvoice.paymentNumber = nextPaymentNumber;
+        tempInvoice.payments.push({
+            numero: nextPaymentNumber,
+            date: today,
+            mode: modePaiement,
+            montant: montant
+        });
+        tempInvoice.dejaPayer = nextDejaPayer;
+        tempInvoice.reste = nextReste;
+
+        // Commit to global currentInvoice
+        currentInvoice = tempInvoice;
+
+        // 5. Save to localStorage
+        const index = factures.findIndex(f => f.matricule === currentInvoice.matricule);
+        if (index !== -1) {
+            factures[index] = currentInvoice;
+        } else {
+            factures.push(currentInvoice);
+        }
+        localStorage.setItem("facturesData", JSON.stringify(factures));
+
+        // 6. Clear input and refresh UI
+        montantInput.value = "";
+        fillFactureForm(currentInvoice);
+        alert("Paiement enregistré avec succès.");
+
+    } catch (error) {
+        console.error("Webhook error:", error);
+        alert("Erreur : connexion impossible. Paiement non enregistré.");
     }
-    hh();
-    // 5. Clear input and refresh UI
-    montantInput.value = "";
-    fillFactureForm(currentInvoice);
-    alert("Paiement enregistré et facture créée !");
 }
 
 // --- LIST FACTURES PAGE LOGIC ---
