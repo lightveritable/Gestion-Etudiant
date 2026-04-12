@@ -101,6 +101,41 @@ function displayStudents(dataToDisplay = students) {
         // Retrouver l'index original dans le tableau global students
         const originalIndex = students.indexOf(s);
 
+        // 1. Load local payment data for synchronization
+        const facturesData = JSON.parse(localStorage.getItem("facturesData") || "[]");
+        // Fix: Use String conversion to avoid type mismatch (e.g., number vs string)
+        const facture = facturesData.find(f => String(f.matricule) === String(s.matricule));
+
+        // 2. Base totals from student metadata (totalAPayer is the source of truth for the debt)
+        const total = parseFloat(s.totalAPayer || s.montantAPayer) || 0;
+
+        // 3. Computed values from payment history (fallback to student fields if no local facture)
+        const montantPaye = facture 
+            ? (facture.dejaPayer || facture.montantPaye || 0) 
+            : (parseFloat(s.montantPaye) || 0);
+            
+        const reste = total - montantPaye;
+        
+        // 4. Status mapping: use backend status if available, fallback to local calculation
+        let rawStatus = s.paiement || (facture ? facture.paiement : null);
+        let paiementStatus = "Non payé";
+
+        if (rawStatus === "PAYE" || rawStatus === "Payé") {
+            paiementStatus = "Payé";
+        } else if (rawStatus === "EN COURS" || rawStatus === "En cours") {
+            paiementStatus = "En cours";
+        } else if (!rawStatus) {
+            if (total > 0 && reste <= 0) {
+                paiementStatus = "Payé";
+            } else if (total > 0 && montantPaye > 0) {
+                paiementStatus = "En cours";
+            } else if (total === 0) {
+                paiementStatus = "Payé";
+            }
+        } else {
+            paiementStatus = rawStatus; // Fallback to raw string if any
+        }
+
         table.innerHTML += `
 <tr class="border-b border-[#e2e8f0] hover:bg-[#f8fafc] bg-white transition-colors">
 <td class="p-[14px] text-gray-700 font-bold">${s.matricule || '–'}</td>
@@ -113,7 +148,14 @@ function displayStudents(dataToDisplay = students) {
 <td class="p-[14px] text-gray-700">${s.telephone || '–'}</td>
 <td class="p-[14px] text-gray-700">${s.Adresse || '–'}</td>
 <td class="p-[14px] text-gray-700">${s.niveau}</td>
-<td class="p-[14px] text-gray-700">${s.montantAPayer ? (s.montantAPayer + " Ar") : "0 Ar"}</td>
+<td class="p-[14px] text-gray-700 font-bold">${total.toLocaleString()} Ar</td>
+<td class="p-[14px] text-gray-700 font-bold text-green-600">${montantPaye.toLocaleString()} Ar</td>
+<td class="p-[14px] text-gray-700 font-bold text-orange-600">${reste.toLocaleString()} Ar</td>
+<td class="p-[14px] text-center">
+    <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase transition-all ${paiementStatus === 'Payé' ? 'bg-green-100 text-green-700 border border-green-200' : paiementStatus === 'En cours' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-red-100 text-red-700 border border-red-200'}">
+        ${paiementStatus}
+    </span>
+</td>
 <td class="p-[14px] text-center text-gray-700">${s.a1 ? 'Oui' : 'Non'}</td>
 <td class="p-[14px] text-center text-gray-700">${s.a2 ? 'Oui' : 'Non'}</td>
 <td class="p-[14px] text-gray-700 font-mono">${s.c1 || '–'}</td>
@@ -275,7 +317,7 @@ async function ajoutermodifierEtudiant(event) {
             facebook: student.facebook,
             niveau: student.niveau,
             totalAPayer: student.montantAPayer,
-            montantPaye: student.montantPaye,
+            // Payments are handled in facturesData, not here
             A1: student.a1,
             A2: student.a2,
             B1: student.b1,

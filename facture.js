@@ -36,6 +36,12 @@ function initFacturePage() {
 }
 
 function createTemplateInvoice(student) {
+    // Synchronize with totalAPayer from student list
+    const total = parseFloat(student.totalAPayer || student.montantAPayer) || 0;
+    // Fix: Initialize from backend montantPaye if available
+    const deja = parseFloat(student.montantPaye) || 0;
+    const reste = total - deja;
+
     return {
         id: null, // Temporary
         reference: "---",
@@ -44,9 +50,9 @@ function createTemplateInvoice(student) {
         nom: student.nom,
         prenom: student.prenom,
         niveau: student.niveau,
-        totalAPayer: 400000,
-        dejaPayer: 0,
-        reste: 400000,
+        totalAPayer: total,
+        dejaPayer: deja,
+        reste: reste,
         paymentNumber: 0,
         payments: []
     };
@@ -142,6 +148,11 @@ async function enregistrerPaiement() {
     
     if (!tempInvoice) {
         const today = new Date().toLocaleDateString('fr-CA');
+        // Synchronize with totalAPayer and montantPaye from student list
+        const total = parseFloat(selectedStudent.totalAPayer || selectedStudent.montantAPayer) || 0;
+        const deja = parseFloat(selectedStudent.montantPaye) || 0;
+        const reste = total - deja;
+
         tempInvoice = {
             id: Date.now(),
             reference: "FACT-" + Date.now(),
@@ -150,9 +161,9 @@ async function enregistrerPaiement() {
             nom: selectedStudent.nom,
             prenom: selectedStudent.prenom,
             niveau: selectedStudent.niveau,
-            totalAPayer: 400000,
-            dejaPayer: 0,
-            reste: 400000,
+            totalAPayer: total,
+            dejaPayer: deja,
+            reste: reste,
             paymentNumber: 0,
             payments: [],
             reason: reason
@@ -173,37 +184,53 @@ async function enregistrerPaiement() {
 
     const dataToSend = {
         reference: tempInvoice.reference,
-        dateFacture: tempInvoice.dateFacture,
         matricule: tempInvoice.matricule,
         nom: tempInvoice.nom,
         prenom: tempInvoice.prenom,
         niveau: tempInvoice.niveau,
+        
+        totalAPayer: tempInvoice.totalAPayer,
+        montantPaye: nextDejaPayer,
+        paiement: nextReste <= 0 ? "PAYE" : "EN COURS",
+        reste: nextReste,
+
         montant: montant,
         modePaiement: modePaiement,
         raison: reason,
-        dejaPayer: nextDejaPayer,
-        reste: nextReste,
+        numeroPaiement: nextPaymentNumber,
         datePaiement: today
     };
+
+    // 4. Send to Webhook with Timeout Protection
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
     try {
         console.log("Sending to Webhook:", dataToSend);
         
-        const response = await fetch("https://hook.us2.make.com/a8w23dlsuw54ey3878vv7yms0i71ot4o", {
+        const response = await fetch("https://hook.us2.make.com/m6nfkmn9dqk1v7m8loousmni1iqpsqpk", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(dataToSend)
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dataToSend),
+            signal: controller.signal
         });
 
+        clearTimeout(timeoutId);
+
         if (!response.ok) {
-            throw new Error("Webhook response not OK");
+            throw new Error(`HTTP Error ${response.status}`);
         }
 
-        console.log("Webhook success");
+        const result = await response.json();
+        
+        // Ensure backend explicitly confirmed success
+        if (result && result.success === false) {
+             throw new Error("Webhook returned success:false");
+        }
 
-        // 4. Update Invoice object locally only after success
+        console.log("Webhook success confirmed");
+
+        // 5. Update Invoice object locally only after confirmed webhook success
         tempInvoice.paymentNumber = nextPaymentNumber;
         tempInvoice.payments.push({
             numero: nextPaymentNumber,
@@ -217,7 +244,7 @@ async function enregistrerPaiement() {
         // Commit to global currentInvoice
         currentInvoice = tempInvoice;
 
-        // 5. Save to localStorage
+        // 6. Save to localStorage
         const index = factures.findIndex(f => f.matricule === currentInvoice.matricule);
         if (index !== -1) {
             factures[index] = currentInvoice;
@@ -226,7 +253,7 @@ async function enregistrerPaiement() {
         }
         localStorage.setItem("facturesData", JSON.stringify(factures));
 
-        // 6. Clear input and refresh UI
+        // 7. Clear input and refresh UI
         montantInput.value = "";
         fillFactureForm(currentInvoice);
         alert("Paiement enregistré avec succès.");
