@@ -25,7 +25,7 @@ function initFacturePage() {
     }
 
     selectedStudent = JSON.parse(studentStr);
-    
+
     // Check if an invoice exists for this student
     const factures = JSON.parse(localStorage.getItem("facturesData") || "[]");
     currentInvoice = factures.find(f => f.matricule === selectedStudent.matricule);
@@ -167,7 +167,7 @@ function enregistrerPaiement() {
     // 3. Update Invoice object
     currentInvoice.paymentNumber++;
     const today = new Date().toLocaleDateString('fr-CA');
-    
+
     const newPayment = {
         numero: currentInvoice.paymentNumber,
         date: today,
@@ -213,10 +213,21 @@ function enregistrerPaiement() {
         },
         body: JSON.stringify(dataToSend)
     })
-    .catch(error => {
-        console.error("Webhook error:", error);
-    });
 
+
+        .catch(error => {
+            console.error("Webhook error:", error);
+        });
+    async function hh() {
+        const text = await res.json();
+
+        if (text.success) {
+            alert("success");;
+        }else{
+            alert("echec");
+        }
+    }
+    hh();
     // 5. Clear input and refresh UI
     montantInput.value = "";
     fillFactureForm(currentInvoice);
@@ -280,7 +291,7 @@ function renderFacturesTable() {
 function voirFacture(matricule) {
     const studentsData = JSON.parse(localStorage.getItem("studentsData") || "[]");
     const student = studentsData.find(s => s.matricule === matricule);
-    
+
     if (student) {
         localStorage.setItem("selectedStudent", JSON.stringify(student));
         window.location.href = "facture.html";
@@ -321,7 +332,7 @@ function exportFacturePDF(index) {
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
     doc.text("Informations Étudiant:", 20, 55);
-    
+
     doc.setFont("helvetica", "normal");
     doc.text(`Matricule: ${f.matricule}`, 25, 65);
     doc.text(`Nom: ${f.nom}`, 25, 72);
