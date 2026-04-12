@@ -75,6 +75,7 @@ function displayStudents(dataToDisplay = students) {
 <td class="p-[14px] text-gray-700">${s.tel}</td>
 <td class="p-[14px] text-gray-700">${s.adresse}</td>
 <td class="p-[14px] text-gray-700">${s.niveau}</td>
+<td class="p-[14px] text-gray-700">${s.montantAPayer ? (s.montantAPayer + " Ar") : "0 Ar"}</td>
 <td class="p-[14px] text-center text-gray-700">${s.a1 ? 'Oui' : 'Non'}</td>
 <td class="p-[14px] text-center text-gray-700">${s.a2 ? 'Oui' : 'Non'}</td>
 <td class="p-[14px] text-gray-700 font-mono">${s.c1 || '–'}</td>
@@ -197,6 +198,7 @@ async function ajoutermodifierEtudiant(event) {
         tel: getVal(["idTel", "tel"]),
         adresse: getVal(["idAdresse", "adresse"]),
         niveau: getVal(["idNiveau", "niveau"]),
+        montantAPayer: getVal(["idMontant", "montantAPayer"]),
         a1: checked("A1"),
         a2: checked("A2"),
         c1: certStr(["C1L", "C1H", "C1M", "C1S"]),
@@ -234,7 +236,7 @@ async function ajoutermodifierEtudiant(event) {
             telephone: student.tel,
             facebook: student.facebook,
             niveau: student.niveau,
-            totalAPayer: student.totalAPayer,
+            totalAPayer: student.montantAPayer,
             montantPaye: student.montantPaye,
             A1: student.a1,
             A2: student.a2,
@@ -411,6 +413,7 @@ document.addEventListener("DOMContentLoaded", () => {
             matricule: ["matricule", "idMatricule"],
             cin: ["cin", "idNumCin"],
             facebook: ["facebook", "idfcbk"],
+            montantAPayer: ["montantAPayer", "idMontant"],
         };
 
         for (let key in fields) {

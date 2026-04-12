@@ -9,6 +9,7 @@ const COLUMN_LABELS = {
     tel:        "Téléphone",
     adresse:    "Adresse",
     niveau:     "Niveau",
+    montantAPayer: "Montant à payer",
     a1:         "A1",
     a2:         "A2",
     c1:         "C1",
