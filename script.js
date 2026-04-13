@@ -34,7 +34,7 @@ function calculateAge(dateStr) {
     return age;
 }
 
-function btnAjout(){
+function btnAjout() {
     let students = JSON.parse(localStorage.getItem("studentsData"));
     if (localStorage.getItem("Mtrcl")) {
         localStorage.removeItem("Mtrcl");
@@ -42,7 +42,7 @@ function btnAjout(){
     }
     localStorage.removeItem("studentToEdit");
     localStorage.removeItem("editIndex");
-    localStorage.setItem("Mtrcl",parseInt(students[students.length -1].matricule)+1);
+    localStorage.setItem("Mtrcl", parseInt(students[students.length - 1].matricule) + 1);
     location.href = "index.html";
 }
 
@@ -110,12 +110,12 @@ function displayStudents(dataToDisplay = students) {
         const total = parseFloat(s.totalAPayer || s.montantAPayer) || 0;
 
         // 3. Computed values from payment history (fallback to student fields if no local facture)
-        const montantPaye = facture 
-            ? (facture.dejaPayer || facture.montantPaye || 0) 
+        const montantPaye = facture
+            ? (facture.dejaPayer || facture.montantPaye || 0)
             : (parseFloat(s.montantPaye) || 0);
-            
+
         const reste = total - montantPaye;
-        
+
         // 4. Status mapping: use backend status if available, fallback to local calculation
         let rawStatus = s.paiement || (facture ? facture.paiement : null);
         let paiementStatus = "Non payé";
@@ -157,13 +157,13 @@ function displayStudents(dataToDisplay = students) {
         ${paiementStatus}
     </span>
 </td>
-<td class="p-[14px] text-center text-gray-700">${s.a1 ? 'Oui' : 'Non'}</td>
-<td class="p-[14px] text-center text-gray-700">${s.a2 ? 'Oui' : 'Non'}</td>
+<td class="p-[14px] text-center text-gray-700">${s.a1}</td>
+<td class="p-[14px] text-center text-gray-700">${s.a2}</td>
 <td class="p-[14px] text-gray-700 font-mono">${s.c1 || '–'}</td>
 <td class="p-[14px] text-gray-700 font-mono">${s.c2 || '–'}</td>
 <td class="p-[14px] text-gray-700 font-mono">${s.b1 || '–'}</td>
 <td class="p-[14px] text-gray-700 font-mono">${s.b2 || '–'}</td>
-<td class="p-[14px] text-center text-gray-700">${s.paramede ? 'Oui' : 'Non'}</td>
+<td class="p-[14px] text-center text-gray-700">${s.paramede}</td>
 <td class="p-[14px] text-gray-700">${s.passport || '–'}</td>
 <td class="p-[14px] text-gray-700">${isoToDate(s.datFinPass) || '–'}</td>
 <td class="p-[14px] text-gray-700">${s.numCop || '–'}</td>
@@ -450,12 +450,31 @@ function resetForm() {
 
 
 // ===== SUPPRIMER =====
-
-function deleteStudent(index) {
+async function deleteStudent(index) {
     if (confirm("Supprimer cet étudiant ?")) {
-        students.splice(index, 1);
-        localStorage.setItem("studentsData", JSON.stringify(students));
-        displayStudents();
+        let x = parseInt(students[index].matricule);
+
+        const res = await fetch(Ajout_mofif_webhook, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                
+                matricule: x
+            })
+        });
+
+        const text = await res.json();
+        console.log(text.success);
+
+        if (text.success) {
+            students.splice(index, 1);
+            localStorage.removeItem("studentsData");
+            localStorage.setItem("studentsData", JSON.stringify(students));
+            alert("Étudiant supprimé ✅");
+            displayStudents();
+        }
     }
 }
 
@@ -465,7 +484,7 @@ function deleteStudent(index) {
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("form");
-    
+
     if (form) {
         form.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -541,7 +560,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.textContent = "Modifier";
             }
         });
-    }else if (localStorage.getItem("Mtrcl")){
+    } else if (localStorage.getItem("Mtrcl")) {
         document.getElementById("idMatricule").value = localStorage.getItem("Mtrcl");
     }
 });
