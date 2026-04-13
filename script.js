@@ -93,6 +93,9 @@ function displayStudents(dataToDisplay = students) {
     if (!table) return;
 
     table.innerHTML = "";
+    
+    // Garder une trace des étudiants affichés pour l'export
+    window.currentDisplayedStudents = dataToDisplay;
 
     const countEl = document.getElementById("studentCount");
     if (countEl) countEl.innerText = dataToDisplay.length;
@@ -352,7 +355,10 @@ async function ajoutermodifierEtudiant(event) {
             localStorage.setItem("studentsData", JSON.stringify(students));
             localStorage.removeItem("studentToEdit");
             localStorage.removeItem("editIndex");
-            alert("Étudiant ajouté ✅");
+            
+            const message = (code === "mdf") ? "Étudiant modifié ✅" : "Étudiant ajouté ✅";
+            alert(message);
+            
             window.location.href = "list.html";
         }
 

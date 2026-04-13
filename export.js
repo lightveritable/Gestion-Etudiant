@@ -44,9 +44,8 @@ function exportPDF() {
         return;
     }
 
-    // 2. Lire les étudiants depuis localStorage
-    const studentsRaw = localStorage.getItem("studentsData");
-    const students = studentsRaw ? JSON.parse(studentsRaw) : [];
+    // 2. Utiliser les étudiants actuellement affichés (filtrés)
+    const students = window.currentDisplayedStudents || [];
 
     // 3. Construire les en-têtes et les lignes
     const headers = selectedKeys.map(key => COLUMN_LABELS[key] || key);
