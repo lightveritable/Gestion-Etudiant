@@ -7,6 +7,7 @@ const COLUMN_LABELS = {
     dateNais:   "Date de naissance",
     cin:        "CIN",
     email:      "Email",
+    facebook:   "Facebook",
     tel:        "Téléphone",
     adresse:    "Adresse",
     niveau:     "Niveau",

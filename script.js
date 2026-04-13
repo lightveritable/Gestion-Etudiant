@@ -145,6 +145,7 @@ function displayStudents(dataToDisplay = students) {
 <td class="p-[14px] text-gray-700 font-bold">${calculateAge(s.dateNaissance)}</td>
 <td class="p-[14px] text-gray-700">${s.cin || '–'}</td>
 <td class="p-[14px] text-gray-700">${s.email}</td>
+<td class="p-[14px] text-gray-700">${s.facebook || '–'}</td>
 <td class="p-[14px] text-gray-700">${s.telephone || '–'}</td>
 <td class="p-[14px] text-gray-700">${s.Adresse || '–'}</td>
 <td class="p-[14px] text-gray-700">${s.niveau}</td>
