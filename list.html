@@ -63,18 +63,38 @@
         <!-- Dynamic Filter Bar -->
         <div class="flex items-center gap-4 flex-wrap">
           <div class="relative min-w-[300px]">
-            <input type="text" id="searchInput" onkeyup="filterStudents()" placeholder="Rechercher Nom, Prénom ou CIN..."
+            <input type="text" id="searchInput" onkeyup="filterStudents()" placeholder="Rechercher Nom, Prénom, CIN ou Niveau..."
               class="w-full h-10 pl-10 pr-4 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3 top-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </div>
 
           <div class="flex items-center gap-4 bg-gray-50 p-1.5 rounded-lg border border-gray-100">
-            <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-600 uppercase tracking-wider px-2">
-              <input type="checkbox" id="filterA1" onchange="filterStudents()" class="w-4 h-4 text-blue-600 rounded"> A1
-            </label>
-            <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-600 uppercase tracking-wider px-2">
-              <input type="checkbox" id="filterA2" onchange="filterStudents()" class="w-4 h-4 text-blue-600 rounded"> A2
-            </label>
+            <div class="flex items-center gap-1.5 px-2">
+              <span class="text-[10px] font-black text-gray-400 uppercase tracking-wider">A1</span>
+              <select id="filterA1" onchange="filterStudents()" class="text-[11px] border border-gray-200 rounded px-1.5 py-0.5 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none transition-all cursor-pointer font-bold text-gray-700">
+                <option value="all">Tous</option>
+                <option value="true">Oui</option>
+                <option value="false">Non</option>
+              </select>
+            </div>
+            
+            <div class="flex items-center gap-1.5 px-2">
+              <span class="text-[10px] font-black text-gray-400 uppercase tracking-wider">A2</span>
+              <select id="filterA2" onchange="filterStudents()" class="text-[11px] border border-gray-200 rounded px-1.5 py-0.5 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none transition-all cursor-pointer font-bold text-gray-700">
+                <option value="all">Tous</option>
+                <option value="true">Oui</option>
+                <option value="false">Non</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-1.5 px-2">
+              <span class="text-[10px] font-black text-gray-400 uppercase tracking-wider">Para.</span>
+              <select id="filterParamede" onchange="filterStudents()" class="text-[11px] border border-gray-200 rounded px-1.5 py-0.5 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none transition-all cursor-pointer font-bold text-gray-700">
+                <option value="all">Tous</option>
+                <option value="true">Oui</option>
+                <option value="false">Non</option>
+              </select>
+            </div>
             
             <div class="h-6 w-px bg-gray-200 mx-1"></div>
 

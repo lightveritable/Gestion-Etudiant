@@ -13,6 +13,16 @@ function isoToDate(dateStr) {
     return dateStr;
 }
 
+// Fonction utilitaire pour vérifier la véracité (gère booleans et strings "true"/"false")
+function isTrue(val) {
+    if (val === true) return true;
+    if (typeof val === "string") {
+        const lower = val.toLowerCase();
+        return lower === "true" || lower === "oui" || lower === "1";
+    }
+    return false;
+}
+
 function calculateAge(dateStr) {
     if (!dateStr) return "–";
 
@@ -166,7 +176,7 @@ function displayStudents(dataToDisplay = students) {
 <td class="p-[14px] text-gray-700 font-mono">${s.c2 || '–'}</td>
 <td class="p-[14px] text-gray-700 font-mono">${s.b1 || '–'}</td>
 <td class="p-[14px] text-gray-700 font-mono">${s.b2 || '–'}</td>
-<td class="p-[14px] text-center text-gray-700">${s.paramede}</td>
+<td class="p-[14px] text-center text-gray-700">${(s.Paramede !== undefined ? s.Paramede : s.paramede)}</td>
 <td class="p-[14px] text-gray-700">${s.passport || '–'}</td>
 <td class="p-[14px] text-gray-700">${isoToDate(s.datFinPass) || '–'}</td>
 <td class="p-[14px] text-gray-700">${s.numCop || '–'}</td>
@@ -375,8 +385,9 @@ async function ajoutermodifierEtudiant(event) {
 
 function filterStudents() {
     const query = document.getElementById("searchInput").value.toLowerCase();
-    const a1Only = document.getElementById("filterA1").checked;
-    const a2Only = document.getElementById("filterA2").checked;
+    const a1Filter = document.getElementById("filterA1").value;
+    const a2Filter = document.getElementById("filterA2").value;
+    const paramedeFilter = document.getElementById("filterParamede").value;
 
     // Récupérer les modules cochés pour chaque certificat (Vertical Checkboxes)
     const getCheckedModules = (className) => {
@@ -394,13 +405,21 @@ function filterStudents() {
         const matchesText =
             s.nom.toLowerCase().includes(query) ||
             s.prenom.toLowerCase().includes(query) ||
-            (s.cin && s.cin.toLowerCase().includes(query));
+            (s.cin && s.cin.toLowerCase().includes(query)) ||
+            (s.niveau && s.niveau.toLowerCase().includes(query));
 
         if (!matchesText) return false;
 
-        // Filtres Boolean (A1, A2)
-        if (a1Only && !s.a1) return false;
-        if (a2Only && !s.a2) return false;
+        // Filtres Boolean (A1, A2, Paramede) - Utilise isTrue pour gérer "TRUE"/"FALSE" en texte
+        if (a1Filter === "true" && !isTrue(s.a1)) return false;
+        if (a1Filter === "false" && isTrue(s.a1)) return false;
+
+        if (a2Filter === "true" && !isTrue(s.a2)) return false;
+        if (a2Filter === "false" && isTrue(s.a2)) return false;
+
+        const valPara = (s.Paramede !== undefined ? s.Paramede : s.paramede);
+        if (paramedeFilter === "true" && !isTrue(valPara)) return false;
+        if (paramedeFilter === "false" && isTrue(valPara)) return false;
 
         // Filtres Certificats (OU logic : l'étudiant match s'il a AU MOINS UN des modules cochés)
         const checkModulesOr = (studentVal, activeMods) => {
