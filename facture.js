@@ -265,87 +265,112 @@ async function enregistrerPaiement() {
 
 // --- LIST FACTURES PAGE LOGIC ---
 
-let allFactures = []; // Global storage for webhook data
+let allFactures = []; // Global storage for facture data
 
 function initListFacturePage() {
-    renderFacturesTable();
+    // 1. Afficher instantanément depuis localStorage
+    const cached = JSON.parse(localStorage.getItem("facturesData") || "[]");
+    if (cached.length > 0) {
+        allFactures = cached;
+        renderFacturesTableLocale();
+    }
+    // 2. Synchronisation automatique en arrière-plan (silencieuse)
+    syncFacturesDepuisServeur();
 }
 
-async function renderFacturesTable() {
+// Rendu local (depuis allFactures) sans appel réseau
+function renderFacturesTableLocale() {
     const tbody = document.getElementById("facturesTable");
     if (!tbody) return;
+    tbody.innerHTML = "";
 
-    // Show loading state
-    tbody.innerHTML = `
-        <tr>
-            <td colspan="14" class="p-12 text-center">
-                <div class="flex flex-col items-center justify-center gap-3">
-                    <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-gray-500 font-medium">Chargement des archives depuis le serveur...</p>
-                </div>
-            </td>
-        </tr>
-    `;
+    const counter = document.getElementById("facturesCount");
+    if (counter) counter.textContent = allFactures.length + " facture(s)";
 
-    try {
-        const response = await fetch("https://hook.us2.make.com/3xpwsogtxqlqiiw1f9xnji1hl75x04c6");
+    if (!allFactures || allFactures.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="14" class="p-12 text-center text-gray-400 italic">Aucune facture en cache. Cliquez sur Actualiser.</td></tr>`;
+        return;
+    }
 
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-
-        allFactures = await response.json();
-        tbody.innerHTML = "";
-
-        if (!allFactures || allFactures.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="14" class="p-12 text-center text-gray-400 italic">Aucune facture trouvée sur le serveur.</td></tr>`;
-            return;
-        }
-
-        allFactures.forEach((f, index) => {
-            const row = `
-                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td class="p-4 font-mono text-[10px] font-bold text-blue-600">${f.reference || "-"}</td>
-                    <td class="p-4 text-xs text-gray-600 whitespace-nowrap">${f.datePaiement || "-"}</td>
-                    <td class="p-4 text-sm font-semibold text-gray-800">${f.matricule || "-"}</td>
-                    <td class="p-4 text-sm text-gray-700">${f.nom || "-"}</td>
-                    <td class="p-4 text-sm text-gray-700">${f.prenom || "-"}</td>
-                    <td class="p-4 text-center"><span class="px-2 py-0.5 rounded bg-gray-100 text-[10px] whitespace-nowrap">${f.niveau || "-"}</span></td>
-                    <td class="p-4 text-xs text-gray-600">${f.raison || "-"}</td>
-                    <td class="p-4 text-xs text-gray-600">${f.modePaiement || "-"}</td>
-                    <td class="p-4 text-center text-xs text-gray-600 font-bold">${f.numeroPaiement || "-"}</td>
-                    <td class="p-4 text-center text-xs font-bold text-blue-600 bg-blue-50/50">${f.paiement || "0"}</td>
-                    <td class="p-4 text-sm font-bold text-green-600 whitespace-nowrap">${Number(f.montantPaye || 0).toLocaleString()} Ar</td>
-                    <td class="p-4 text-sm font-bold text-gray-900 whitespace-nowrap">${Number(f.totalAPayer || 0).toLocaleString()} Ar</td>
-                    <td class="p-4 text-sm font-black ${parseFloat(f.reste) > 0 ? 'text-orange-600' : 'text-green-600'} whitespace-nowrap">${Number(f.reste || 0).toLocaleString()} Ar</td>
-                    <td class="p-4">
-                        <div class="flex items-center gap-1">
-                            <button onclick="exportFacturePDF(${index})" class="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all shadow-sm flex items-center gap-1 text-[10px] font-bold" title="Exporter PDF">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                            </button>
-                            <button onclick="supprimerFacture(${index})" class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Supprimer (Visuel)">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-            tbody.innerHTML += row;
-        });
-
-    } catch (error) {
-        console.error("Erreur Webhook:", error);
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="14" class="p-12 text-center text-red-500">
-                    <div class="flex flex-col items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                        <p class="font-bold text-lg">Impossible de charger les factures</p>
-                        <p class="text-sm opacity-70">Vérifiez votre connexion ou le statut du serveur.</p>
+    allFactures.forEach((f, index) => {
+        const row = `
+            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                <td class="p-4 font-mono text-[10px] font-bold text-blue-600">${f.reference || "-"}</td>
+                <td class="p-4 text-xs text-gray-600 whitespace-nowrap">${f.datePaiement || "-"}</td>
+                <td class="p-4 text-sm font-semibold text-gray-800">${f.matricule || "-"}</td>
+                <td class="p-4 text-sm text-gray-700">${f.nom || "-"}</td>
+                <td class="p-4 text-sm text-gray-700">${f.prenom || "-"}</td>
+                <td class="p-4 text-center"><span class="px-2 py-0.5 rounded bg-gray-100 text-[10px] whitespace-nowrap">${f.niveau || "-"}</span></td>
+                <td class="p-4 text-xs text-gray-600">${f.raison || "-"}</td>
+                <td class="p-4 text-xs text-gray-600">${f.modePaiement || "-"}</td>
+                <td class="p-4 text-center text-xs text-gray-600 font-bold">${f.numeroPaiement || "-"}</td>
+                <td class="p-4 text-center text-xs font-bold text-blue-600 bg-blue-50/50">${f.paiement || "0"}</td>
+                <td class="p-4 text-sm font-bold text-green-600 whitespace-nowrap">${Number(f.montantPaye || 0).toLocaleString()} Ar</td>
+                <td class="p-4 text-sm font-bold text-gray-900 whitespace-nowrap">${Number(f.totalAPayer || 0).toLocaleString()} Ar</td>
+                <td class="p-4 text-sm font-black ${parseFloat(f.reste) > 0 ? 'text-orange-600' : 'text-green-600'} whitespace-nowrap">${Number(f.reste || 0).toLocaleString()} Ar</td>
+                <td class="p-4">
+                    <div class="flex items-center gap-1">
+                        <button onclick="exportFacturePDF(${index})" class="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all shadow-sm" title="Exporter PDF">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        </button>
+                        <button onclick="supprimerFacture(${index})" class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Supprimer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </button>
                     </div>
                 </td>
             </tr>
         `;
+        tbody.innerHTML += row;
+    });
+}
+
+// Synchronisation depuis le serveur webhook → met à jour le localStorage
+async function syncFacturesDepuisServeur() {
+    const tbody = document.getElementById("facturesTable");
+    if (!tbody) return;
+
+    // Montrer le spinner seulement si aucun cache n'est affiché
+    if (allFactures.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="14" class="p-12 text-center">
+                    <div class="flex flex-col items-center justify-center gap-3">
+                        <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <p class="text-gray-500 font-medium">Chargement des factures...</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    try {
+        const response = await fetch("https://hook.us2.make.com/3xpwsogtxqlqiiw1f9xnji1hl75x04c6");
+
+        if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+
+        const data = await response.json();
+        allFactures = Array.isArray(data) ? data : [];
+
+        // Sauvegarder dans localStorage
+        localStorage.setItem("facturesData", JSON.stringify(allFactures));
+        renderFacturesTableLocale();
+
+    } catch (error) {
+        console.error("Erreur sync factures:", error);
+        // En cas d'erreur réseau, conserver l'affichage du cache
+        if (allFactures.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="14" class="p-12 text-center text-red-500">
+                        <div class="flex flex-col items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                            <p class="font-bold text-lg">Impossible de charger les factures</p>
+                            <p class="text-sm opacity-70">Vérifiez votre connexion.</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
     }
 }
 
@@ -362,17 +387,11 @@ function voirFacture(matricule) {
 }
 
 function supprimerFacture(index) {
-    if (confirm("Voulez-vous vraiment retirer cette facture de l'affichage ? (Note: Cela ne la supprimera pas du serveur)")) {
+    if (confirm("Voulez-vous vraiment supprimer cette facture de la liste ?")) {
         allFactures.splice(index, 1);
-        // Refresh the table locally
-        const tbody = document.getElementById("facturesTable");
-        tbody.innerHTML = "";
-
-        allFactures.forEach((f, newIndex) => {
-            // Re-render essentially... 
-            // Better to just call a local render helper but for simplicity:
-            location.reload();
-        });
+        // Persister la suppression dans localStorage
+        localStorage.setItem("facturesData", JSON.stringify(allFactures));
+        renderFacturesTableLocale();
     }
 }
 
