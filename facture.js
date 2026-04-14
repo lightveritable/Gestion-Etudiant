@@ -267,6 +267,14 @@ async function enregistrerPaiement() {
 
 let allFactures = []; // Global storage for facture data
 
+// Convertit une date ISO (ex: "2026-04-14T00:00:00.000Z") en "14/04/2026"
+function formatDate(dateStr) {
+    if (!dateStr) return "-";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr; // Si déjà formatée, la retourner telle quelle
+    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
 function initListFacturePage() {
     // 1. Afficher instantanément depuis localStorage
     const cached = JSON.parse(localStorage.getItem("facturesData") || "[]");
@@ -296,7 +304,7 @@ function renderFacturesTableLocale() {
         const row = `
             <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 <td class="p-4 font-mono text-[10px] font-bold text-blue-600">${f.reference || "-"}</td>
-                <td class="p-4 text-xs text-gray-600 whitespace-nowrap">${f.datePaiement || "-"}</td>
+                <td class="p-4 text-xs text-gray-600 whitespace-nowrap">${formatDate(f.date || f.datePaiement)}</td>
                 <td class="p-4 text-sm font-semibold text-gray-800">${f.matricule || "-"}</td>
                 <td class="p-4 text-sm text-gray-700">${f.nom || "-"}</td>
                 <td class="p-4 text-sm text-gray-700">${f.prenom || "-"}</td>
@@ -410,8 +418,8 @@ function exportFacturePDF(index) {
     // Reference and Date
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text(`Référence: ${f.reference}`, 20, 35);
-    doc.text(`Date: ${f.dateFacture}`, 20, 40);
+    doc.text(`Référence: ${f.reference || "-"}`, 20, 35);
+    doc.text(`Date: ${formatDate(f.date || f.dateFacture)}`, 20, 40);
 
     // Student Info Section
     doc.setFontSize(12);
@@ -440,7 +448,7 @@ function exportFacturePDF(index) {
     // Table (Using data from the object)
     const tableData = [[
         f.numeroPaiement || "1",
-        f.datePaiement || "-",
+        formatDate(f.date || f.datePaiement),
         f.modePaiement || "-",
         `${Number(f.montantPaye || 0).toLocaleString()} Ar`
     ]];
