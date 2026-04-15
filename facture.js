@@ -286,21 +286,81 @@ function initListFacturePage() {
     syncFacturesDepuisServeur();
 }
 
-// Rendu local (depuis allFactures) sans appel réseau
+// Rendu local (depuis allFactures) sans appel réseau — déclenche le filtre après chargement
 function renderFacturesTableLocale() {
-    const tbody = document.getElementById("facturesTable");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-
     const counter = document.getElementById("facturesCount");
     if (counter) counter.textContent = allFactures.length + " facture(s)";
+
+    // Après chaque chargement, ré-appliquer les filtres actifs (ou tout afficher)
+    filtrerFactures();
+}
+
+// ===== LOGIQUE DE FILTRAGE =====
+
+/**
+ * Appelé à chaque saisie dans l'un des deux champs de filtre.
+ * Les deux filtres s'appliquent simultanément (ET logique).
+ */
+function filtrerFactures() {
+    const tbody = document.getElementById("facturesTable");
+    if (!tbody) return;
+
+    const texte  = (document.getElementById("filterTexte")?.value  || "").trim().toLowerCase();
+    const numero = (document.getElementById("filterNumero")?.value || "").trim();
+
+    // Afficher / masquer les boutons "×" selon si un filtre est actif
+    const btnClearTexte  = document.getElementById("clearTexte");
+    const btnClearNumero = document.getElementById("clearNumero");
+    if (btnClearTexte)  btnClearTexte.classList.toggle("hidden", texte === "");
+    if (btnClearNumero) btnClearNumero.classList.toggle("hidden", numero === "");
+
+    tbody.innerHTML = "";
 
     if (!allFactures || allFactures.length === 0) {
         tbody.innerHTML = `<tr><td colspan="14" class="p-12 text-center text-gray-400 italic">Aucune facture en cache. Cliquez sur Actualiser.</td></tr>`;
         return;
     }
 
-    allFactures.forEach((f, index) => {
+    const resultats = allFactures.filter((f, _i) => {
+        // ── Filtre texte (référence, nom, prénom, niveau) ──
+        let passTexte = true;
+        if (texte !== "") {
+            const ref    = (f.reference    || "").toLowerCase();
+            const nom    = (f.nom          || "").toLowerCase();
+            const prenom = (f.prenom       || "").toLowerCase();
+            const niveau = (f.niveau       || "").toLowerCase();
+            passTexte = ref.includes(texte) || nom.includes(texte) ||
+                        prenom.includes(texte) || niveau.includes(texte);
+        }
+
+        // ── Filtre numéro de paiement (chiffres uniquement, correspondance exacte) ──
+        let passNumero = true;
+        if (numero !== "") {
+            const numPaie = String(f.numeroPaiement || f.numeroPaiemen || "");
+            passNumero = numPaie === numero;
+        }
+
+        return passTexte && passNumero;
+    });
+
+    // Mise à jour du compteur de résultats
+    const filterResult = document.getElementById("filterResult");
+    if (filterResult) {
+        if (texte !== "" || numero !== "") {
+            filterResult.textContent = `${resultats.length} résultat(s) sur ${allFactures.length}`;
+        } else {
+            filterResult.textContent = "";
+        }
+    }
+
+    if (resultats.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="14" class="p-10 text-center text-gray-400 italic">Aucune facture ne correspond aux critères.</td></tr>`;
+        return;
+    }
+
+    resultats.forEach((f, index) => {
+        // Retrouver l'index réel dans allFactures pour les boutons PDF/Supprimer
+        const realIndex = allFactures.indexOf(f);
         const row = `
             <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 <td class="p-4 font-mono text-[10px] font-bold text-blue-600">${f.reference || "-"}</td>
@@ -311,17 +371,17 @@ function renderFacturesTableLocale() {
                 <td class="p-4 text-center"><span class="px-2 py-0.5 rounded bg-gray-100 text-[10px] whitespace-nowrap">${f.niveau || "-"}</span></td>
                 <td class="p-4 text-xs text-gray-600">${f.raison || "-"}</td>
                 <td class="p-4 text-xs text-gray-600">${f.modePaiement || "-"}</td>
-                <td class="p-4 text-center text-xs text-gray-600 font-bold">${f.numeroPaiement || "-"}</td>
+                <td class="p-4 text-center text-xs text-gray-600 font-bold">${f.numeroPaiement || f.numeroPaiemen || "-"}</td>
                 <td class="p-4 text-center text-xs font-bold text-blue-600 bg-blue-50/50">${f.paiement || "0"}</td>
                 <td class="p-4 text-sm font-bold text-green-600 whitespace-nowrap">${Number(f.montantPaye || 0).toLocaleString()} Ar</td>
                 <td class="p-4 text-sm font-bold text-gray-900 whitespace-nowrap">${Number(f.totalAPayer || 0).toLocaleString()} Ar</td>
                 <td class="p-4 text-sm font-black ${parseFloat(f.reste) > 0 ? 'text-orange-600' : 'text-green-600'} whitespace-nowrap">${Number(f.reste || 0).toLocaleString()} Ar</td>
                 <td class="p-4">
                     <div class="flex items-center gap-1">
-                        <button onclick="exportFacturePDF(${index})" class="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all shadow-sm" title="Exporter PDF">
+                        <button onclick="exportFacturePDF(${realIndex})" class="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all shadow-sm" title="Exporter PDF">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                         </button>
-                        <button onclick="supprimerFacture(${index})" class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Supprimer">
+                        <button onclick="supprimerFacture(${realIndex})" class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Supprimer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                         </button>
                     </div>
@@ -331,6 +391,23 @@ function renderFacturesTableLocale() {
         tbody.innerHTML += row;
     });
 }
+
+/**
+ * Empêche la saisie de tout caractère non numérique dans le champ N° Paiement.
+ */
+function onNumeroInput(input) {
+    input.value = input.value.replace(/\D/g, "");
+}
+
+/**
+ * Efface un champ de filtre donné et relance le filtrage.
+ */
+function clearFilter(fieldId) {
+    const el = document.getElementById(fieldId);
+    if (el) { el.value = ""; el.focus(); }
+    filtrerFactures();
+}
+// ===== FIN LOGIQUE DE FILTRAGE =====
 
 // Synchronisation depuis le serveur webhook → met à jour le localStorage
 async function syncFacturesDepuisServeur() {
