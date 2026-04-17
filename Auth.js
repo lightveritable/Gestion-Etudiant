@@ -5,7 +5,7 @@ function checkSession() {
 
     if (!token || !expireTime || now > expireTime) {
         sessionStorage.clear();
-        //window.location.href = "login.html";
+        window.location.href = "login.html";
     }
 }
 
