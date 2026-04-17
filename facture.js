@@ -47,6 +47,7 @@ function createTemplateInvoice(student) {
         reference: "---",
         dateFacture: new Date().toLocaleDateString('fr-CA'),
         matricule: student.matricule,
+        Matricule: student.Matricule || student.matriculeString || "",
         nom: student.nom,
         prenom: student.prenom,
         niveau: student.niveau,
@@ -63,6 +64,9 @@ function fillFactureForm(invoice) {
 
     // Student Info (Readonly)
     document.getElementById("matricule").value = invoice.matricule || "";
+    if(document.getElementById("vraiMatricule")) {
+        document.getElementById("vraiMatricule").value = invoice.Matricule || selectedStudent?.Matricule || "";
+    }
     document.getElementById("nom").value = invoice.nom || "";
     document.getElementById("prenom").value = invoice.prenom || "";
     document.getElementById("niveau").value = invoice.niveau || "";
@@ -158,6 +162,7 @@ async function enregistrerPaiement() {
             reference: "FACT-" + Date.now(),
             dateFacture: today,
             matricule: selectedStudent.matricule,
+            Matricule: selectedStudent.Matricule || "",
             nom: selectedStudent.nom,
             prenom: selectedStudent.prenom,
             niveau: selectedStudent.niveau,
@@ -171,9 +176,8 @@ async function enregistrerPaiement() {
     }
 
     if (montant > tempInvoice.reste) {
-        if (!confirm("Le montant dépasse le reste à payer. Continuer ?")) {
-            return;
-        }
+        alert("Le montant dépasse le reste à payer. L'envoi est annulé.");
+        return;
     }
 
     // 3. Prepare data for the webhook (Final state values)
@@ -184,7 +188,7 @@ async function enregistrerPaiement() {
 
     const dataToSend = {
         reference: tempInvoice.reference,     // Col A
-        matricule: tempInvoice.matricule,     // Col B
+        matricule: tempInvoice.Matricule || "", // Le vrai Matricule "Mxxxxx"
         nom: tempInvoice.nom,                 // Col C
         prenom: tempInvoice.prenom,           // Col D
         niveau: tempInvoice.niveau,           // Col E
@@ -365,7 +369,7 @@ function filtrerFactures() {
             <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 <td class="p-4 font-mono text-[10px] font-bold text-blue-600">${f.reference || "-"}</td>
                 <td class="p-4 text-xs text-gray-600 whitespace-nowrap">${formatDate(f.date || f.datePaiement)}</td>
-                <td class="p-4 text-sm font-semibold text-gray-800">${f.matricule || "-"}</td>
+                <td class="p-4 text-sm font-bold text-blue-800">${f.matricule || f.Matricule || "-"}</td>
                 <td class="p-4 text-sm text-gray-700">${f.nom || "-"}</td>
                 <td class="p-4 text-sm text-gray-700">${f.prenom || "-"}</td>
                 <td class="p-4 text-center"><span class="px-2 py-0.5 rounded bg-gray-100 text-[10px] whitespace-nowrap">${f.niveau || "-"}</span></td>
@@ -373,7 +377,8 @@ function filtrerFactures() {
                 <td class="p-4 text-xs text-gray-600">${f.modePaiement || "-"}</td>
                 <td class="p-4 text-center text-xs text-gray-600 font-bold">${f.numeroPaiement || f.numeroPaiemen || "-"}</td>
                 <td class="p-4 text-center text-xs font-bold text-blue-600 bg-blue-50/50">${f.paiement || "0"}</td>
-                <td class="p-4 text-sm font-bold text-green-600 whitespace-nowrap">${Number(f.montantPaye || 0).toLocaleString()} Ar</td>
+                <td class="p-4 text-sm font-bold text-purple-600 whitespace-nowrap">${Number(f.aktuellPay || f.Aktuell_pay || 0).toLocaleString()} Ar</td>
+                <td class="p-4 text-sm font-bold text-green-600 whitespace-nowrap">${Number(f.montantPaye || f.dejaPayer || f.DejatPayer || 0).toLocaleString()} Ar</td>
                 <td class="p-4 text-sm font-bold text-gray-900 whitespace-nowrap">${Number(f.totalAPayer || 0).toLocaleString()} Ar</td>
                 <td class="p-4 text-sm font-black ${parseFloat(f.reste) > 0 ? 'text-orange-600' : 'text-green-600'} whitespace-nowrap">${Number(f.reste || 0).toLocaleString()} Ar</td>
                 <td class="p-4">
@@ -504,10 +509,11 @@ function exportFacturePDF(index) {
     doc.text("Informations Étudiant:", 20, 55);
 
     doc.setFont("helvetica", "normal");
-    doc.text(`Matricule: ${f.matricule}`, 25, 65);
-    doc.text(`Nom: ${f.nom}`, 25, 72);
-    doc.text(`Prénom: ${f.prenom}`, 25, 79);
-    doc.text(`Niveau: ${f.niveau}`, 25, 86);
+    doc.text(`numero: ${f.matricule}`, 25, 65);
+    doc.text(`Matricule: ${f.Matricule || "-"}`, 25, 72);
+    doc.text(`Nom: ${f.nom}`, 25, 79);
+    doc.text(`Prénom: ${f.prenom}`, 25, 86);
+    doc.text(`Niveau: ${f.niveau}`, 25, 93);
 
     // Summary Section
     doc.setFont("helvetica", "bold");
@@ -515,23 +521,24 @@ function exportFacturePDF(index) {
 
     doc.setFont("helvetica", "normal");
     doc.text(`Total à payer: ${Number(f.totalAPayer || 0).toLocaleString()} Ar`, 25, 115);
-    doc.text(`Déjà payé: ${Number(f.montantPaye || 0).toLocaleString()} Ar`, 25, 122);
-    doc.text(`Reste: ${Number(f.reste || 0).toLocaleString()} Ar`, 25, 129);
+    doc.text(`Versement actuel: ${Number(f.aktuellPay || f.Aktuell_pay || 0).toLocaleString()} Ar`, 25, 122);
+    doc.text(`Total déjà payé: ${Number(f.montantPaye || f.dejaPayer || f.DejatPayer || 0).toLocaleString()} Ar`, 25, 129);
+    doc.text(`Reste: ${Number(f.reste || 0).toLocaleString()} Ar`, 25, 136);
 
     // Payment History Section
     doc.setFont("helvetica", "bold");
-    doc.text("Historique des Paiements:", 20, 145);
+    doc.text("Historique des Paiements:", 20, 153);
 
     // Table (Using data from the object)
     const tableData = [[
-        f.numeroPaiement || "1",
+        f.numeroPaiement || f.numeroPaiemen || "1",
         formatDate(f.date || f.datePaiement),
         f.modePaiement || "-",
-        `${Number(f.montantPaye || 0).toLocaleString()} Ar`
+        `${Number(f.aktuellPay || f.Aktuell_pay || f.montant || 0).toLocaleString()} Ar`
     ]];
 
     doc.autoTable({
-        startY: 152,
+        startY: 160,
         head: [['N°', 'Date', 'Mode', 'Montant']],
         body: tableData,
         theme: 'plain', // Black and white

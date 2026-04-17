@@ -10,38 +10,37 @@
 
 <body class="bg-[#f3f4f6] min-h-screen flex flex-col font-sans text-gray-800">
 
-  <!-- Global Top Navigation Header -->
-  <header class="sticky top-0 z-50 w-full h-[70px] bg-[#1e3a8a] shadow-md flex items-center justify-between px-6 shrink-0">
+  <header class="sticky top-0 z-50 w-full min-h-[70px] h-auto bg-[#1e3a8a] shadow-md flex flex-wrap items-center justify-between px-6 py-2 md:py-0 shrink-0 gap-2">
     <!-- Left Section -->
     <div class="flex items-center gap-3">
-      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-      <span class="text-white font-bold text-[18px]">Gestion Étudiants</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white shrink-0"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      <span class="text-white font-bold text-[16px] md:text-[18px] whitespace-nowrap">Gestion Étudiants</span>
     </div>
 
     <!-- Right Section -->
-    <nav class="flex items-center gap-4">
-      <button onclick="btnAjout()" class="px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 text-white flex items-center gap-2 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+    <nav class="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar">
+      <button onclick="btnAjout()" class="px-3 md:px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 text-white flex items-center gap-2 transition-colors whitespace-nowrap">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
           <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
         </svg>
-        Ajouter Étudiant
+        <span class="hidden md:inline">Ajouter Étudiant</span>
       </button>
-      <a href="list.html" class="px-4 py-2 rounded-lg bg-[#2563eb] text-white font-semibold flex items-center gap-2 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+      <a href="list.html" class="px-3 md:px-4 py-2 rounded-lg bg-[#2563eb] text-white font-semibold flex items-center gap-2 transition-colors whitespace-nowrap">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
         </svg>
-        Liste des Étudiants
+        <span class="hidden md:inline">Liste des Étudiants</span>
       </a>
-      <a href="list-facture.html" class="px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 text-white flex items-center gap-2 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        Factures
+      <a href="list-facture.html" class="px-3 md:px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 text-white flex items-center gap-2 transition-colors whitespace-nowrap">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span class="hidden md:inline">Factures</span>
       </a>
-      <boutton onclick="logout()" class="px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 text-white flex items-center gap-2 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+      <button onclick="logout()" class="px-3 md:px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 text-white flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
         </svg>
-        Logout
-      </boutton>
+        <span class="hidden md:inline">Logout</span>
+      </button>
     </nav>
   </header>
 
@@ -68,111 +67,125 @@
         </button>
 
         <!-- Dynamic Filter Bar -->
-        <div class="flex items-center gap-4 flex-wrap">
-          <div class="relative min-w-[300px]">
+        <div class="flex flex-col md:flex-row md:items-center gap-4">
+          <!-- Barre de recherche -->
+          <div class="relative w-full md:min-w-[300px] md:w-auto">
             <input type="text" id="searchInput" onkeyup="filterStudents()" placeholder="Rechercher Nom, Prénom, CIN ou Niveau..."
-              class="w-full h-10 pl-10 pr-4 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm">
+              class="w-full h-10 pl-10 pr-4 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm shadow-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3 top-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </div>
 
-          <div class="flex items-center gap-4 bg-gray-50 p-1.5 rounded-lg border border-gray-100">
-            <div class="flex items-center gap-1.5 px-2">
-              <span class="text-[10px] font-black text-gray-400 uppercase tracking-wider">A1</span>
-              <select id="filterA1" onchange="filterStudents()" class="text-[11px] border border-gray-200 rounded px-1.5 py-0.5 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none transition-all cursor-pointer font-bold text-gray-700">
-                <option value="all">Tous</option>
-                <option value="true">Oui</option>
-                <option value="false">Non</option>
-              </select>
+          <!-- Conteneur global des filtres -->
+          <div class="flex flex-wrap items-center gap-4 bg-gray-50 p-2 rounded-xl border border-gray-100 shadow-sm w-full md:w-auto">
+            
+            <!-- Section Sélecteurs (A1, A2, Para) -->
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="flex items-center gap-1.5 bg-white px-2 py-1 rounded border border-gray-100">
+                <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">A1</span>
+                <select id="filterA1" onchange="filterStudents()" class="text-[11px] border-none p-0 bg-transparent focus:ring-0 outline-none cursor-pointer font-bold text-gray-700">
+                  <option value="all">Tous</option>
+                  <option value="true">Oui</option>
+                  <option value="false">Non</option>
+                </select>
+              </div>
+              
+              <div class="flex items-center gap-1.5 bg-white px-2 py-1 rounded border border-gray-100">
+                <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">A2</span>
+                <select id="filterA2" onchange="filterStudents()" class="text-[11px] border-none p-0 bg-transparent focus:ring-0 outline-none cursor-pointer font-bold text-gray-700">
+                  <option value="all">Tous</option>
+                  <option value="true">Oui</option>
+                  <option value="false">Non</option>
+                </select>
+              </div>
+
+              <div class="flex items-center gap-1.5 bg-white px-2 py-1 rounded border border-gray-100">
+                <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Para.</span>
+                <select id="filterParamede" onchange="filterStudents()" class="text-[11px] border-none p-0 bg-transparent focus:ring-0 outline-none cursor-pointer font-bold text-gray-700">
+                  <option value="all">Tous</option>
+                  <option value="true">Oui</option>
+                  <option value="false">Non</option>
+                </select>
+              </div>
             </div>
             
-            <div class="flex items-center gap-1.5 px-2">
-              <span class="text-[10px] font-black text-gray-400 uppercase tracking-wider">A2</span>
-              <select id="filterA2" onchange="filterStudents()" class="text-[11px] border border-gray-200 rounded px-1.5 py-0.5 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none transition-all cursor-pointer font-bold text-gray-700">
-                <option value="all">Tous</option>
-                <option value="true">Oui</option>
-                <option value="false">Non</option>
-              </select>
-            </div>
+            <div class="hidden lg:block h-8 w-px bg-gray-200 mx-1"></div>
 
-            <div class="flex items-center gap-1.5 px-2">
-              <span class="text-[10px] font-black text-gray-400 uppercase tracking-wider">Para.</span>
-              <select id="filterParamede" onchange="filterStudents()" class="text-[11px] border border-gray-200 rounded px-1.5 py-0.5 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none transition-all cursor-pointer font-bold text-gray-700">
-                <option value="all">Tous</option>
-                <option value="true">Oui</option>
-                <option value="false">Non</option>
-              </select>
-            </div>
-            
-            <div class="h-6 w-px bg-gray-200 mx-1"></div>
-
-            <!-- Multi-select Toggles (Vertical Checkboxes) -->
-            <div class="flex items-start gap-6 px-2 py-1">
+            <!-- Section Modules (C1, C2, B1, B2) -->
+            <div class="flex flex-wrap items-start gap-5 px-1 py-1">
               <!-- C1 -->
               <div class="flex flex-col gap-1">
-                <span class="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-wider">C1</span>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="L" class="filterC1 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> L
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="H" class="filterC1 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> H
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="M" class="filterC1 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> M
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="S" class="filterC1 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> S
-                </label>
+                <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-1">C1</span>
+                <div class="flex gap-2 flex-wrap">
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="L" class="filterC1 w-3 h-3 rounded" onchange="filterStudents()"> L
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="H" class="filterC1 w-3 h-3 rounded" onchange="filterStudents()"> H
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="M" class="filterC1 w-3 h-3 rounded" onchange="filterStudents()"> M
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="S" class="filterC1 w-3 h-3 rounded" onchange="filterStudents()"> S
+                  </label>
+                </div>
               </div>
 
               <!-- C2 -->
               <div class="flex flex-col gap-1">
-                <span class="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-wider">C2</span>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="L" class="filterC2 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> L
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="H" class="filterC2 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> H
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="M" class="filterC2 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> M
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="S" class="filterC2 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> S
-                </label>
+                <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-1">C2</span>
+                <div class="flex gap-2 flex-wrap">
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="L" class="filterC2 w-3 h-3 rounded" onchange="filterStudents()"> L
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="H" class="filterC2 w-3 h-3 rounded" onchange="filterStudents()"> H
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="M" class="filterC2 w-3 h-3 rounded" onchange="filterStudents()"> M
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="S" class="filterC2 w-3 h-3 rounded" onchange="filterStudents()"> S
+                  </label>
+                </div>
               </div>
 
               <!-- B1 -->
               <div class="flex flex-col gap-1">
-                <span class="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-wider">B1</span>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="L" class="filterB1 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> L
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="H" class="filterB1 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> H
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="M" class="filterB1 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> M
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="S" class="filterB1 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> S
-                </label>
+                <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-1">B1</span>
+                <div class="flex gap-2 flex-wrap">
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="L" class="filterB1 w-3 h-3 rounded" onchange="filterStudents()"> L
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="H" class="filterB1 w-3 h-3 rounded" onchange="filterStudents()"> H
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="M" class="filterB1 w-3 h-3 rounded" onchange="filterStudents()"> M
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="S" class="filterB1 w-3 h-3 rounded" onchange="filterStudents()"> S
+                  </label>
+                </div>
               </div>
 
               <!-- B2 -->
               <div class="flex flex-col gap-1">
-                <span class="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-wider">B2</span>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="L" class="filterB2 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> L
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="H" class="filterB2 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> H
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="M" class="filterB2 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> M
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer text-[12px] text-gray-600 hover:text-blue-600 transition-colors">
-                  <input type="checkbox" value="S" class="filterB2 w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" onchange="filterStudents()"> S
-                </label>
+                <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-1">B2</span>
+                <div class="flex gap-2 flex-wrap">
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="L" class="filterB2 w-3 h-3 rounded" onchange="filterStudents()"> L
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="H" class="filterB2 w-3 h-3 rounded" onchange="filterStudents()"> H
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="M" class="filterB2 w-3 h-3 rounded" onchange="filterStudents()"> M
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
+                    <input type="checkbox" value="S" class="filterB2 w-3 h-3 rounded" onchange="filterStudents()"> S
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -183,10 +196,12 @@
         <table class="w-full text-left border-collapse min-w-[1200px]">
           <thead class="bg-[#f1f5f9] text-[#334155] border-b border-[#e2e8f0]">
             <tr>
+              <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">numero</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Matricule</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Nom</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Prénom</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Naissance</th>
+              <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Date d'entrée</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Age</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">CIN</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Email</th>
@@ -234,7 +249,10 @@
       <!-- Checkboxes -->
       <div class="grid grid-cols-2 gap-3 mb-6">
         <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
-          <input type="checkbox" value="matricule" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Matricule
+          <input type="checkbox" value="matricule" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> numero
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
+          <input type="checkbox" value="vraiMatricule" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Matricule
         </label>
         <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
           <input type="checkbox" value="nom" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Nom
@@ -244,6 +262,9 @@
         </label>
         <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
           <input type="checkbox" value="dateNais" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Date de naissance
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
+          <input type="checkbox" value="dateEntree" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Date d'entrée
         </label>
         <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
           <input type="checkbox" value="age" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Age
