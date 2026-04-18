@@ -25,10 +25,11 @@ if (!nowtoken || !expireTime || now > expireTime) {
 });
 // Ajouter un écouteur d'événement pour réinitialiser le temps d'expiration à chaque mouvement de souris
 function logout() {
-    //sessionStorage.clear();
+    sessionStorage.clear();
     window.location.href = "login.html";
 }
 // Fin du script session
+
 
 function dateToISO(dateStr) {
     if (!dateStr) return null;
@@ -87,7 +88,7 @@ function btnAjout() {
     location.href = "index.html";
 }
 
-const ETUDIENT_WEBHOOK = "https://hook.us2.make.com/t3x56c33ugy3lbvkjrp7kxlwa7vlq43o";
+const ETUDIENT_WEBHOOK = "https://hook.us2.make.com/n8oyi4bg7sxvb38il9g5n5kcrplq2e89";
 async function fetchStudents() {
     const res = await fetch(ETUDIENT_WEBHOOK, {
         method: "POST",
