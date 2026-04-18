@@ -1,7 +1,7 @@
 //======================session============================
 
 if (!window.fetch) {
-  alert("Ton navigateur est trop ancien");
+    alert("Ton navigateur est trop ancien");
 }
 
 // session
@@ -25,11 +25,10 @@ if (!nowtoken || !expireTime || now > expireTime) {
 });
 // Ajouter un écouteur d'événement pour réinitialiser le temps d'expiration à chaque mouvement de souris
 function logout() {
-    sessionStorage.clear();
+    //sessionStorage.clear();
     window.location.href = "login.html";
 }
 // Fin du script session
-
 
 function dateToISO(dateStr) {
     if (!dateStr) return null;
@@ -88,10 +87,8 @@ function btnAjout() {
     location.href = "index.html";
 }
 
-const ETUDIENT_WEBHOOK ="https://hook.us2.make.com/ybg7uxfelww1snww4uzmndq95dg7fkkl";
+const ETUDIENT_WEBHOOK = "https://hook.us2.make.com/ybg7uxfelww1snww4uzmndq95dg7fkkl";
 async function fetchStudents() {
-    const rawData = [];
-    if ( localStorage.getItem("studentsData")){
     const res = await fetch(ETUDIENT_WEBHOOK, {
         method: "POST",
         headers: {
@@ -105,12 +102,8 @@ async function fetchStudents() {
         throw new Error("Network error");
     }
 
-
     // Récupération de la réponse
-    rawData = await res.json();
-}else{
-    rawData = JSON.parse(localStorage.getItem("studentsData"));
-}
+    const rawData = await res.json();
     const data = rawData.map(item => {
         // Version robuste pour ignorer les problèmes de majuscule/minuscule ou d'espaces
         const lowerItem = {};
@@ -161,23 +154,25 @@ if (typeof students === 'undefined') {
 console.log("ok");
 async function loadStudents() {
     // Force la réactualisation à chaque chargement pour éviter de lire un localStorage obsolète
-    /*try {
-<<<<<<< HEAD
-=======
-        if (localStorage.getItem("studentsData"))
+    /* try {
+         students = await fetchStudents();
+         localStorage.setItem("studentsData", JSON.stringify(students));
+     } catch(e) {
+         if (localStorage.getItem("studentsData")) {
+             students = JSON.parse(localStorage.getItem("studentsData"));
+         }
+     }*/
+    if (!localStorage.getItem("studentsData")) {
+
         students = await fetchStudents();
         localStorage.setItem("studentsData", JSON.stringify(students));
-    } catch(e) {
-        if (localStorage.getItem("studentsData")) {
-            students = JSON.parse(localStorage.getItem("studentsData"));
-        }
-    }*/
-     if (localStorage.getItem("studentsData")){
-            students = JSON.parse(localStorage.getItem("studentsData"));
-     }else{
-        students = await fetchStudents();
-        localStorage.setItem("studentsData", JSON.stringify(students));
-        console.log("Students fetched"); 
+        console.log("localstorage exist pas");
+
+    }
+    else {
+        students = JSON.parse(localStorage.getItem("studentsData"));
+        console.log("localstorage exist bien");
+
     }
 }
 window.onload = loadStudents;
@@ -186,7 +181,7 @@ let editIndex = null;
 try {
     const cached = localStorage.getItem("studentsData");
     if (cached) students = JSON.parse(cached);
-} catch(e) { console.error("Cache error", e); }
+} catch (e) { console.error("Cache error", e); }
 console.log("Initial students:", students);
 
 
@@ -512,7 +507,7 @@ function filterStudents() {
         const prenom = (s.prenom || "").trim().toLowerCase();
         const fullName = `${nom} ${prenom}`.trim();
         const reversedFullName = `${prenom} ${nom}`.trim();
-        
+
         const matchesText =
             nom.includes(query) ||
             prenom.includes(query) ||
@@ -664,13 +659,18 @@ document.addEventListener("DOMContentLoaded", () => {
             Matricule: ["Matricule", "idMatriculeString"],
             cin: ["cin", "idNumCin"],
             facebook: ["facebook", "idfcbk"],
-            montantAPayer: ["montantAPayer", "idMontant"],
+            montantAPayer: ["idMontant"],
+            totalAPayer: ["idMontant"],
         };
 
         for (let key in fields) {
             let el = document.getElementById(fields[key][0]) || document.getElementById(fields[key][1]);
             if (el) {
-                let val = student[key] || "";
+                let val = student[key];
+
+                if (val === undefined || val === null) {
+                    val = student.totalAPayer; // fallback important
+                }
                 if (val && typeof val === "string" && val.includes("T")) {
                     val = isoToDate(val);
                 }
