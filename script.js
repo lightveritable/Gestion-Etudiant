@@ -91,6 +91,8 @@ function btnAjout() {
 const ETUDIENT_WEBHOOK = "https://hook.us2.make.com/n8oyi4bg7sxvb38il9g5n5kcrplq2e89";
 
 async function fetchStudents() {
+    const rawData = [];
+    if ( localStorage.getItem("studentsData")){
     const res = await fetch(ETUDIENT_WEBHOOK, {
         method: "POST",
         headers: {
@@ -104,8 +106,12 @@ async function fetchStudents() {
         throw new Error("Network error");
     }
 
+
     // Récupération de la réponse
-    const rawData = await res.json();
+    rawData = await res.json();
+}else{
+    rawData = JSON.parse(localStorage.getItem("studentsData"));
+}
     const data = rawData.map(item => {
         // Version robuste pour ignorer les problèmes de majuscule/minuscule ou d'espaces
         const lowerItem = {};
