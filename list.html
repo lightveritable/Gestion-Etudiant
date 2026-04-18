@@ -117,18 +117,25 @@
                 <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-1">C1</span>
                 <div class="flex gap-2 flex-wrap">
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="L" class="filterC1 w-3 h-3 rounded" onchange="filterStudents()"> L
+                    <input type="checkbox" value="L" class="filterC1 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('C1')"> L
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="H" class="filterC1 w-3 h-3 rounded" onchange="filterStudents()"> H
+                    <input type="checkbox" value="H" class="filterC1 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('C1')"> H
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="M" class="filterC1 w-3 h-3 rounded" onchange="filterStudents()"> M
+                    <input type="checkbox" value="M" class="filterC1 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('C1')"> M
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="S" class="filterC1 w-3 h-3 rounded" onchange="filterStudents()"> S
+                    <input type="checkbox" value="S" class="filterC1 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('C1')"> S
                   </label>
                 </div>
+                <select id="filterCountC1" onchange="handleCountFilterChange('C1')" class="text-[9px] border border-gray-100 rounded bg-white px-1 py-0.5 outline-none font-bold text-gray-600 mt-1 cursor-pointer hover:border-blue-300 transition-colors">
+                  <option value="all">Nb. Modules</option>
+                  <option value="1">1</option>
+                  <option value="2+">2+</option>
+                  <option value="3+">3+</option>
+                  <option value="4">4</option>
+                </select>
               </div>
 
               <!-- C2 -->
@@ -136,18 +143,25 @@
                 <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-1">C2</span>
                 <div class="flex gap-2 flex-wrap">
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="L" class="filterC2 w-3 h-3 rounded" onchange="filterStudents()"> L
+                    <input type="checkbox" value="L" class="filterC2 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('C2')"> L
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="H" class="filterC2 w-3 h-3 rounded" onchange="filterStudents()"> H
+                    <input type="checkbox" value="H" class="filterC2 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('C2')"> H
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="M" class="filterC2 w-3 h-3 rounded" onchange="filterStudents()"> M
+                    <input type="checkbox" value="M" class="filterC2 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('C2')"> M
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="S" class="filterC2 w-3 h-3 rounded" onchange="filterStudents()"> S
+                    <input type="checkbox" value="S" class="filterC2 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('C2')"> S
                   </label>
                 </div>
+                <select id="filterCountC2" onchange="handleCountFilterChange('C2')" class="text-[9px] border border-gray-100 rounded bg-white px-1 py-0.5 outline-none font-bold text-gray-600 mt-1 cursor-pointer hover:border-blue-300 transition-colors">
+                  <option value="all">Nb. Modules</option>
+                  <option value="1">1</option>
+                  <option value="2+">2+</option>
+                  <option value="3+">3+</option>
+                  <option value="4">4</option>
+                </select>
               </div>
 
               <!-- B1 -->
@@ -155,18 +169,25 @@
                 <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-1">B1</span>
                 <div class="flex gap-2 flex-wrap">
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="L" class="filterB1 w-3 h-3 rounded" onchange="filterStudents()"> L
+                    <input type="checkbox" value="L" class="filterB1 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('B1')"> L
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="H" class="filterB1 w-3 h-3 rounded" onchange="filterStudents()"> H
+                    <input type="checkbox" value="H" class="filterB1 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('B1')"> H
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="M" class="filterB1 w-3 h-3 rounded" onchange="filterStudents()"> M
+                    <input type="checkbox" value="M" class="filterB1 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('B1')"> M
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="S" class="filterB1 w-3 h-3 rounded" onchange="filterStudents()"> S
+                    <input type="checkbox" value="S" class="filterB1 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('B1')"> S
                   </label>
                 </div>
+                <select id="filterCountB1" onchange="handleCountFilterChange('B1')" class="text-[9px] border border-gray-100 rounded bg-white px-1 py-0.5 outline-none font-bold text-gray-600 mt-1 cursor-pointer hover:border-blue-300 transition-colors">
+                  <option value="all">Nb. Modules</option>
+                  <option value="1">1</option>
+                  <option value="2+">2+</option>
+                  <option value="3+">3+</option>
+                  <option value="4">4</option>
+                </select>
               </div>
 
               <!-- B2 -->
@@ -174,18 +195,25 @@
                 <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-1">B2</span>
                 <div class="flex gap-2 flex-wrap">
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="L" class="filterB2 w-3 h-3 rounded" onchange="filterStudents()"> L
+                    <input type="checkbox" value="L" class="filterB2 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('B2')"> L
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="H" class="filterB2 w-3 h-3 rounded" onchange="filterStudents()"> H
+                    <input type="checkbox" value="H" class="filterB2 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('B2')"> H
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="M" class="filterB2 w-3 h-3 rounded" onchange="filterStudents()"> M
+                    <input type="checkbox" value="M" class="filterB2 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('B2')"> M
                   </label>
                   <label class="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600 font-bold hover:text-blue-600">
-                    <input type="checkbox" value="S" class="filterB2 w-3 h-3 rounded" onchange="filterStudents()"> S
+                    <input type="checkbox" value="S" class="filterB2 w-3 h-3 rounded" onchange="handleModuleCheckboxChange('B2')"> S
                   </label>
                 </div>
+                <select id="filterCountB2" onchange="handleCountFilterChange('B2')" class="text-[9px] border border-gray-100 rounded bg-white px-1 py-0.5 outline-none font-bold text-gray-600 mt-1 cursor-pointer hover:border-blue-300 transition-colors">
+                  <option value="all">Nb. Modules</option>
+                  <option value="1">1</option>
+                  <option value="2+">2+</option>
+                  <option value="3+">3+</option>
+                  <option value="4">4</option>
+                </select>
               </div>
             </div>
           </div>
@@ -209,7 +237,7 @@
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Téléphone</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Adresse</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Niveau</th>
-              <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Montant à payer</th>
+              <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Total à payer</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Montant payé</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Reste</th>
               <th class="p-[14px] font-semibold text-sm border-b border-[#e2e8f0]">Paiement</th>
@@ -288,7 +316,7 @@
           <input type="checkbox" value="niveau" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Niveau
         </label>
         <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
-          <input type="checkbox" value="montantAPayer" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Montant à payer
+          <input type="checkbox" value="montantAPayer" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> Total à payer
         </label>
         <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
           <input type="checkbox" value="a1" class="export-col-checkbox w-4 h-4 text-blue-600 rounded" checked> A1

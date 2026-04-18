@@ -210,7 +210,7 @@ function displayStudents(dataToDisplay = students) {
         const facture = facturesData.find(f => String(f.matricule) === String(s.matricule));
 
         // 2. Base totals from student metadata (totalAPayer is the source of truth for the debt)
-        const total = parseFloat(s.totalAPayer || s.montantAPayer) || 0;
+        const total = parseFloat(s.totalAPayer) || 0;
 
         // 3. Computed values from payment history (fallback to student fields if no local facture)
         const montantPaye = facture
@@ -385,7 +385,7 @@ async function ajoutermodifierEtudiant(event) {
         telephone: getVal(["idTel"]),
         Adresse: getVal(["idAdresse"]),
         niveau: getVal(["idNiveau", "niveau"]),
-        montantAPayer: getVal(["idMontant", "montantAPayer"]),
+        totalAPayer: parseFloat(getVal(["idMontant", "montantAPayer"])) || 0,
         a1: checked("A1"),
         a2: checked("A2"),
         c1: certStr(["C1L", "C1H", "C1M", "C1S"]),
@@ -424,7 +424,7 @@ async function ajoutermodifierEtudiant(event) {
             facebook: student.facebook,
             niveau: student.niveau,
             paiement: student.paiement || "EN COURS",
-            totalAPayer: student.montantAPayer || student.totalAPayer || 0,
+            totalAPayer: student.totalAPayer || 0,
             "montantPayé": student.montantPaye || 0,
             A1: student.a1,
             A2: student.a2,
@@ -484,11 +484,40 @@ async function ajoutermodifierEtudiant(event) {
 
 // ===== FILTRAGE =====
 
+// Logique d'exclusion mutuelle GLOBALE : si on change n'importe quel compteur, on décoche TOUTES les checkboxes modules
+function handleCountFilterChange(cert) {
+    const selector = "filterCount" + cert;
+    const countVal = document.getElementById(selector).value;
+    if (countVal !== "all") {
+        // Décoche tout globalement
+        document.querySelectorAll('.filterC1, .filterC2, .filterB1, .filterB2').forEach(cb => {
+            cb.checked = false;
+        });
+    }
+    filterStudents();
+}
+
+// Logique d'exclusion mutuelle GLOBALE : si on coche n'importe quel module, on remet TOUS les compteurs à "all"
+function handleModuleCheckboxChange(cert) {
+    // Si on coche quoi que ce soit, on reset tous les sélecteurs de nombre
+    document.getElementById("filterCountC1").value = "all";
+    document.getElementById("filterCountC2").value = "all";
+    document.getElementById("filterCountB1").value = "all";
+    document.getElementById("filterCountB2").value = "all";
+    
+    filterStudents();
+}
+
 function filterStudents() {
     const query = document.getElementById("searchInput").value.toLowerCase().trim();
     const a1Filter = document.getElementById("filterA1").value;
     const a2Filter = document.getElementById("filterA2").value;
     const paramedeFilter = document.getElementById("filterParamede").value;
+
+    const countC1 = document.getElementById("filterCountC1").value;
+    const countC2 = document.getElementById("filterCountC2").value;
+    const countB1 = document.getElementById("filterCountB1").value;
+    const countB2 = document.getElementById("filterCountB2").value;
 
     // Récupérer les modules cochés pour chaque certificat (Vertical Checkboxes)
     const getCheckedModules = (className) => {
@@ -543,6 +572,28 @@ function filterStudents() {
         if (!checkModulesAnd(s.b2, b2Modules)) return false;
         if (!checkModulesAnd(s.c1, c1Modules)) return false;
         if (!checkModulesAnd(s.c2, c2Modules)) return false;
+
+        // Filtres par Nombre de Modules par certificat (Calcul indépendant)
+        const getStrCount = (val) => {
+            if (!val) return 0;
+            const matches = String(val).toUpperCase().match(/[LMHS]/g);
+            return matches ? matches.length : 0;
+        };
+
+        const matchesCount = (studentVal, filterVal) => {
+            if (filterVal === "all") return true;
+            const count = getStrCount(studentVal);
+            if (filterVal === "1") return count === 1;
+            if (filterVal === "2+") return count >= 2;
+            if (filterVal === "3+") return count >= 3;
+            if (filterVal === "4") return count === 4;
+            return true;
+        };
+
+        if (!matchesCount(s.c1, countC1)) return false;
+        if (!matchesCount(s.c2, countC2)) return false;
+        if (!matchesCount(s.b1, countB1)) return false;
+        if (!matchesCount(s.b2, countB2)) return false;
 
         return true;
     });

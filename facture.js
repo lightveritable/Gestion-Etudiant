@@ -37,7 +37,7 @@ function initFacturePage() {
 
 function createTemplateInvoice(student) {
     // Synchronize with totalAPayer from student list
-    const total = parseFloat(student.totalAPayer || student.montantAPayer) || 0;
+    const total = parseFloat(student.totalAPayer) || 0;
     // Fix: Initialize from backend montantPaye if available
     const deja = parseFloat(student.montantPaye) || 0;
     const reste = total - deja;
@@ -153,7 +153,7 @@ async function enregistrerPaiement() {
     if (!tempInvoice) {
         const today = new Date().toLocaleDateString('fr-CA');
         // Synchronize with totalAPayer and montantPaye from student list
-        const total = parseFloat(selectedStudent.totalAPayer || selectedStudent.montantAPayer) || 0;
+        const total = parseFloat(selectedStudent.totalAPayer) || 0;
         const deja = parseFloat(selectedStudent.montantPaye) || 0;
         const reste = total - deja;
 
