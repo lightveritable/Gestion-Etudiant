@@ -92,7 +92,7 @@ const ETUDIENT_WEBHOOK = "https://hook.us2.make.com/n8oyi4bg7sxvb38il9g5n5kcrplq
 
 async function fetchStudents() {
     const rawData = [];
-    if ( localStorage.getItem("studentsData")){
+    if (!localStorage.getItem("studentsData")){
     const res = await fetch(ETUDIENT_WEBHOOK, {
         method: "POST",
         headers: {
