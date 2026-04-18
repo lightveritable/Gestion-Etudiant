@@ -87,7 +87,7 @@ function btnAjout() {
     location.href = "index.html";
 }
 
-const ETUDIENT_WEBHOOK = "https://hook.us2.make.com/t3x56c33ugy3lbvkjrp7kxlwa7vlq43o";
+const ETUDIENT_WEBHOOK ="https://hook.us2.make.com/ybg7uxfelww1snww4uzmndq95dg7fkkl";
 async function fetchStudents() {
     const res = await fetch(ETUDIENT_WEBHOOK, {
         method: "POST",
@@ -154,13 +154,19 @@ if (typeof students === 'undefined') {
 console.log("ok");
 async function loadStudents() {
     // Force la réactualisation à chaque chargement pour éviter de lire un localStorage obsolète
-    try {
+    /*try {
         students = await fetchStudents();
         localStorage.setItem("studentsData", JSON.stringify(students));
     } catch(e) {
         if (localStorage.getItem("studentsData")) {
             students = JSON.parse(localStorage.getItem("studentsData"));
         }
+    }*/
+    if (localStorage.getItem("studentsData")){
+            students = JSON.parse(localStorage.getItem("studentsData"));
+    }else {
+        students = await fetchStudents();
+        localStorage.setItem("studentsData", JSON.stringify(students));
     }
 }
 window.onload = loadStudents;
