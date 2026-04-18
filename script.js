@@ -89,6 +89,7 @@ function btnAjout() {
 }
 
 const ETUDIENT_WEBHOOK = "https://hook.us2.make.com/n8oyi4bg7sxvb38il9g5n5kcrplq2e89";
+
 async function fetchStudents() {
     const res = await fetch(ETUDIENT_WEBHOOK, {
         method: "POST",
@@ -155,13 +156,21 @@ if (typeof students === 'undefined') {
 console.log("ok");
 async function loadStudents() {
     // Force la réactualisation à chaque chargement pour éviter de lire un localStorage obsolète
-    try {
+    /*try {
+        if (localStorage.getItem("studentsData"))
         students = await fetchStudents();
         localStorage.setItem("studentsData", JSON.stringify(students));
     } catch(e) {
         if (localStorage.getItem("studentsData")) {
             students = JSON.parse(localStorage.getItem("studentsData"));
         }
+    }*/
+     if (localStorage.getItem("studentsData")){
+            students = JSON.parse(localStorage.getItem("studentsData"));
+     }else{
+        students = await fetchStudents();
+        localStorage.setItem("studentsData", JSON.stringify(students));
+        console.log("Students fetched"); 
     }
 }
 window.onload = loadStudents;
