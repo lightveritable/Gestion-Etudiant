@@ -25,10 +25,11 @@ if (!nowtoken || !expireTime || now > expireTime) {
 });
 // Ajouter un écouteur d'événement pour réinitialiser le temps d'expiration à chaque mouvement de souris
 function logout() {
-    //sessionStorage.clear();
+    sessionStorage.clear();
     window.location.href = "login.html";
 }
 // Fin du script session
+
 
 function dateToISO(dateStr) {
     if (!dateStr) return null;
@@ -89,6 +90,8 @@ function btnAjout() {
 
 const ETUDIENT_WEBHOOK ="https://hook.us2.make.com/ybg7uxfelww1snww4uzmndq95dg7fkkl";
 async function fetchStudents() {
+    const rawData = [];
+    if ( localStorage.getItem("studentsData")){
     const res = await fetch(ETUDIENT_WEBHOOK, {
         method: "POST",
         headers: {
@@ -102,8 +105,12 @@ async function fetchStudents() {
         throw new Error("Network error");
     }
 
+
     // Récupération de la réponse
-    const rawData = await res.json();
+    rawData = await res.json();
+}else{
+    rawData = JSON.parse(localStorage.getItem("studentsData"));
+}
     const data = rawData.map(item => {
         // Version robuste pour ignorer les problèmes de majuscule/minuscule ou d'espaces
         const lowerItem = {};
@@ -155,6 +162,9 @@ console.log("ok");
 async function loadStudents() {
     // Force la réactualisation à chaque chargement pour éviter de lire un localStorage obsolète
     /*try {
+<<<<<<< HEAD
+=======
+        if (localStorage.getItem("studentsData"))
         students = await fetchStudents();
         localStorage.setItem("studentsData", JSON.stringify(students));
     } catch(e) {
@@ -162,11 +172,12 @@ async function loadStudents() {
             students = JSON.parse(localStorage.getItem("studentsData"));
         }
     }*/
-    if (localStorage.getItem("studentsData")){
+     if (localStorage.getItem("studentsData")){
             students = JSON.parse(localStorage.getItem("studentsData"));
-    }else {
+     }else{
         students = await fetchStudents();
         localStorage.setItem("studentsData", JSON.stringify(students));
+        console.log("Students fetched"); 
     }
 }
 window.onload = loadStudents;
