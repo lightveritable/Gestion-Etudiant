@@ -434,7 +434,8 @@ async function syncFacturesDepuisServeur() {
     }
 
     try {
-        const response = await fetch("https://hook.us2.make.com/3xpwsogtxqlqiiw1f9xnji1hl75x04c6");
+        if (!localStorage.getItem("facturesData")){
+        const response = await fetch("https://hook.us2.make.com/1vbfcorjkvg53yk4ki1ek14v7qmhvodq");
 
         if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
 
@@ -443,6 +444,7 @@ async function syncFacturesDepuisServeur() {
 
         // Sauvegarder dans localStorage
         localStorage.setItem("facturesData", JSON.stringify(allFactures));
+        }
         renderFacturesTableLocale();
 
     } catch (error) {
