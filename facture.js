@@ -5,18 +5,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const page = path.split("/").pop();
 
     if (page === "facture.html") {
+        // initialiser la page de facture payement
         initFacturePage();
     } else if (page === "list-facture.html") {
+        //initialiser la page list facture
         initListFacturePage();
     }
 });
 
 // --- FACTURE PAGE LOGIC ---
 
+// Facture actuellement affichée
 let currentInvoice = null;
+// etudient selectionné
 let selectedStudent = null;
 
-function initFacturePage() {
+async function initFacturePage() {
+    //recuperation de l'etudiant depuis le stockage local 
     const studentStr = localStorage.getItem("selectedStudent");
     if (!studentStr) {
         alert("Aucun étudiant sélectionné.");
@@ -26,65 +31,87 @@ function initFacturePage() {
 
     selectedStudent = JSON.parse(studentStr);
 
-    // Check if an invoice exists for this student
-    const factures = JSON.parse(localStorage.getItem("facturesData") || "[]");
-    currentInvoice = factures.find(f => f.matricule === selectedStudent.matricule);
+    // Rechercher une facture existante pour cet étudiant dans le cache local dans currentInvoice
+    if (!localStorage.getItem("facturesData")) {
+        console.log("Inicialisation du cache des factures depuis le backend...");
+        const response = await fetch("https://hook.us2.make.com/1vbfcorjkvg53yk4ki1ek14v7qmhvodq");
 
-    // If no invoice exists, we just display the form with default values and student info
-    // We do NOT save a new invoice to localStorage yet.
-    fillFactureForm(currentInvoice || createTemplateInvoice(selectedStudent));
+        if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+
+        const listeFactureExistante = await response.json();
+
+        // Sauvegarder dans localStorage
+        localStorage.setItem("facturesData", JSON.stringify(listeFactureExistante));
+    }
+    // récupération des facture depuis le cache local
+    const factures = JSON.parse(localStorage.getItem("facturesData"));
+
+    currentInvoice = factures.filter(f => f.matricule === selectedStudent.Matricule);
+    selectStudent = createTemplateInvoice(selectedStudent),
+        // If no invoice exists, we just display the form with default values and student info
+        console.log("create tempmlate ", currentInvoice);
+    if (currentInvoice.length !== 0) {
+        fillFactureForm(currentInvoice);
+    } else {
+        fillFactureForm([createTemplateInvoice(selectedStudent)]);
+
+    }
+
+
 }
 
-function createTemplateInvoice(student) {
-    // Synchronize with totalAPayer from student list
-    const total = parseFloat(student.totalAPayer) || 0;
-    // Fix: Initialize from backend montantPaye if available
-    const deja = parseFloat(student.montantPaye) || 0;
-    const reste = total - deja;
 
+function createTemplateInvoice(student) {
     return {
-        id: null, // Temporary
-        reference: "---",
-        dateFacture: new Date().toLocaleDateString('fr-CA'),
-        matricule: student.matricule,
-        Matricule: student.Matricule || student.matriculeString || "",
+        reference: "FACT-" + crypto.randomUUID(),
+
+        matricule: student.Matricule,
         nom: student.nom,
         prenom: student.prenom,
         niveau: student.niveau,
-        totalAPayer: total,
-        dejaPayer: deja,
-        reste: reste,
-        paymentNumber: 0,
-        payments: []
+
+        totalAPayer: student.totalAPayer,
+        dejaPayer: student.montantPaye,
+        reste: student.totalAPayer - student.montantPaye, // calcul automatique
+
+        aktuellpay: student.Aktuell_pay,
+        modePaiement: student.modePaiement,
+        raison: "Acompte",
+        // calcul dynamique (ne pas stocker si possible)
+        paiement: (student.totalAPayer - student.montantPaye) <= 0 ? "PAYE" : "EN COURS"
+
     };
 }
 
+// Remplit le formulaire de facture avec les données des factures existantes
 function fillFactureForm(invoice) {
     if (!invoice) return;
-
+    let Jon = invoice[invoice.length - 1];
     // Student Info (Readonly)
-    document.getElementById("matricule").value = invoice.matricule || "";
-    if(document.getElementById("vraiMatricule")) {
-        document.getElementById("vraiMatricule").value = invoice.Matricule || selectedStudent?.Matricule || "";
-    }
-    document.getElementById("nom").value = invoice.nom || "";
-    document.getElementById("prenom").value = invoice.prenom || "";
-    document.getElementById("niveau").value = invoice.niveau || "";
+    document.getElementById("vraiMatricule").value = Jon.matricule || "pas de matricule";
+
+    document.getElementById("nom").value = Jon.nom || "pas de nom";
+    document.getElementById("prenom").value = Jon.prenom || "pas de prenom";
+    document.getElementById("niveau").value = Jon.niveau || "pas de niveau";
 
     // Invoice Info
-    document.getElementById("reference").value = invoice.reference;
-    document.getElementById("displayRef").innerText = invoice.reference;
-    document.getElementById("dateFacture").value = invoice.dateFacture;
-    document.getElementById("paymentNumber").value = invoice.paymentNumber;
+    document.getElementById("reference").value = "FACT-" + crypto.randomUUID();
+
+    document.getElementById("displayRef").innerText = document.getElementById("reference").value;
+    document.getElementById("dateFacture").value = isoToDate(new Date().toISOString());
+    document.getElementById("paymentNumber").value = invoice.length + 1;
 
     // Amounts
-    document.getElementById("totalAPayer").innerText = invoice.totalAPayer.toLocaleString();
-    document.getElementById("dejaPayer").innerText = invoice.dejaPayer.toLocaleString();
-    document.getElementById("reste").innerText = invoice.reste.toLocaleString();
+    document.getElementById("totalAPayer").innerText = Jon.totalAPayer.toLocaleString();
+    document.getElementById("dejaPayer").innerText = Jon.dejaPayer.toLocaleString();
+    document.getElementById("reste").innerText = Jon.reste.toLocaleString();
 
     // History
-    renderPaymentHistory(invoice.payments);
-    updateStatusBadge(invoice.reste);
+    if (invoice.length !== 0) {
+
+        renderPaymentHistory(invoice);
+    }
+    updateStatusBadge(Jon.reste);
 
     // Toggle Payment Form Visibility
     const formSection = document.getElementById("paymentFormSection");
@@ -99,25 +126,28 @@ function fillFactureForm(invoice) {
 
 function renderPaymentHistory(payments) {
     const tbody = document.getElementById("paymentHistory");
+    console.log("p.date", payments)
     if (!tbody) return;
     tbody.innerHTML = "";
 
     if (!payments || payments.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400 italic">Aucun paiement effectué.</td></tr>`;
         return;
-    }
-
-    payments.forEach(p => {
-        const row = `
+    } else {
+        payments.forEach(p => {
+            const row = `
             <tr class="hover:bg-gray-50 border-b border-gray-50">
-                <td class="p-4 font-medium text-gray-500">${p.numero}</td>
+                <td class="p-4 font-medium text-gray-500">${p.numeroPaiement}</td>
                 <td class="p-4 text-gray-700">${p.date}</td>
-                <td class="p-4"><span class="px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-bold uppercase">${p.mode}</span></td>
-                <td class="p-4 font-bold text-gray-900">${p.montant.toLocaleString()} Ar</td>
+                <td class="p-4"><span class="px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-bold uppercase">${p.modePaiement
+                }</span></td>
+                <td class="p-4 font-bold text-gray-900">${p.aktuellPay.toLocaleString()} Ar</td>
+                <td class="p-4 font-bold text-gray-900">${p.reste.toLocaleString()} Ar</td>
             </tr>
         `;
-        tbody.innerHTML += row;
-    });
+            tbody.innerHTML += row;
+        });
+    }
 }
 
 function updateStatusBadge(reste) {
@@ -309,13 +339,13 @@ function filtrerFactures() {
     const tbody = document.getElementById("facturesTable");
     if (!tbody) return;
 
-    const texte  = (document.getElementById("filterTexte")?.value  || "").trim().toLowerCase();
+    const texte = (document.getElementById("filterTexte")?.value || "").trim().toLowerCase();
     const numero = (document.getElementById("filterNumero")?.value || "").trim();
 
     // Afficher / masquer les boutons "×" selon si un filtre est actif
-    const btnClearTexte  = document.getElementById("clearTexte");
+    const btnClearTexte = document.getElementById("clearTexte");
     const btnClearNumero = document.getElementById("clearNumero");
-    if (btnClearTexte)  btnClearTexte.classList.toggle("hidden", texte === "");
+    if (btnClearTexte) btnClearTexte.classList.toggle("hidden", texte === "");
     if (btnClearNumero) btnClearNumero.classList.toggle("hidden", numero === "");
 
     tbody.innerHTML = "";
@@ -329,12 +359,12 @@ function filtrerFactures() {
         // ── Filtre texte (référence, nom, prénom, niveau) ──
         let passTexte = true;
         if (texte !== "") {
-            const ref    = (f.reference    || "").toLowerCase();
-            const nom    = (f.nom          || "").toLowerCase();
-            const prenom = (f.prenom       || "").toLowerCase();
-            const niveau = (f.niveau       || "").toLowerCase();
+            const ref = (f.reference || "").toLowerCase();
+            const nom = (f.nom || "").toLowerCase();
+            const prenom = (f.prenom || "").toLowerCase();
+            const niveau = (f.niveau || "").toLowerCase();
             passTexte = ref.includes(texte) || nom.includes(texte) ||
-                        prenom.includes(texte) || niveau.includes(texte);
+                prenom.includes(texte) || niveau.includes(texte);
         }
 
         // ── Filtre numéro de paiement (chiffres uniquement, correspondance exacte) ──
@@ -434,16 +464,16 @@ async function syncFacturesDepuisServeur() {
     }
 
     try {
-        if (!localStorage.getItem("facturesData")){
-        const response = await fetch("https://hook.us2.make.com/1vbfcorjkvg53yk4ki1ek14v7qmhvodq");
+        if (!localStorage.getItem("facturesData")) {
+            const response = await fetch("https://hook.us2.make.com/1vbfcorjkvg53yk4ki1ek14v7qmhvodq");
 
-        if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+            if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
 
-        const data = await response.json();
-        allFactures = Array.isArray(data) ? data : [];
+            const data = await response.json();
+            allFactures = Array.isArray(data) ? data : [];
 
-        // Sauvegarder dans localStorage
-        localStorage.setItem("facturesData", JSON.stringify(allFactures));
+            // Sauvegarder dans localStorage
+            localStorage.setItem("facturesData", JSON.stringify(allFactures));
         }
         renderFacturesTableLocale();
 

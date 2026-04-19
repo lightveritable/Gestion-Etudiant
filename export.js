@@ -1,8 +1,8 @@
 // ===== EXPORT PDF =====
 
 const COLUMN_LABELS = {
-    matricule:   "numero",
-    vraiMatricule: "Matricule",
+    matricule:  "Matricule",
+    vraiMatricule: "numero",
     nom:        "Nom",
     prenom:     "Prénom",
     dateNais:   "Date de naissance",

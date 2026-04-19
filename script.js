@@ -114,7 +114,7 @@ async function fetchStudents() {
         }
 
         return {
-            matricule: item.numero || lowerItem.numero,
+            numero: item.numero || lowerItem.numero,
             nom: item.nom || lowerItem.nom,
             prenom: item.prenom || lowerItem.prenom,
             dateNaissance: item.dateNaissance || lowerItem.datenaissance,
@@ -241,7 +241,7 @@ function displayStudents(dataToDisplay = students) {
 
         table.innerHTML += `
 <tr class="border-b border-[#e2e8f0] hover:bg-[#f8fafc] bg-white transition-colors">
-<td class="p-[14px] text-gray-700 font-bold">${s.matricule || '–'}</td>
+<td class="p-[14px] text-gray-700 font-bold">${s.numero || '–'}</td>
 <td class="p-[14px] text-gray-700 font-bold">${s.Matricule || '–'}</td>
 <td class="p-[14px] text-gray-700 font-medium">${s.nom}</td>
 <td class="p-[14px] text-gray-700">${s.prenom}</td>
@@ -325,7 +325,7 @@ function clearForm() {
 
 // ===== SAUVEGARDE =====
 
-function saveStudent() {
+/*function saveStudent() {
     let student = {
         id: editIndex === null ? Date.now() : students[editIndex].id,
         nom: document.getElementById("nom").value,
@@ -347,7 +347,7 @@ function saveStudent() {
     localStorage.setItem("studentsData", JSON.stringify(students));
     closeForm();
     displayStudents();
-}
+}*/
 
 let isSubmitting = false;
 let Ajout_mofif_webhook = "https://hook.us2.make.com/opeawjxysicr56wqy3ekpfkdll071u4t";
