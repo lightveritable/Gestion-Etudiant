@@ -241,7 +241,7 @@ function displayStudents(dataToDisplay = students) {
 
         table.innerHTML += `
 <tr class="border-b border-[#e2e8f0] hover:bg-[#f8fafc] bg-white transition-colors">
-<td class="p-[14px] text-gray-700 font-bold">${s.numero || '–'}</td>
+<td class="p-[14px] text-gray-700 font-bold">${s.matricule || '–'}</td>
 <td class="p-[14px] text-gray-700 font-bold">${s.Matricule || '–'}</td>
 <td class="p-[14px] text-gray-700 font-medium">${s.nom}</td>
 <td class="p-[14px] text-gray-700">${s.prenom}</td>

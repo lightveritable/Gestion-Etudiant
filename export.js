@@ -1,8 +1,8 @@
 // ===== EXPORT PDF =====
 
 const COLUMN_LABELS = {
-    matricule:  "Matricule",
-    vraiMatricule: "numero",
+    matricule:  "numero",
+    Matricule:  "Matricule",
     nom:        "Nom",
     prenom:     "Prénom",
     dateNais:   "Date de naissance",
@@ -56,7 +56,7 @@ function exportPDF() {
             if (key === 'age') {
                 return typeof calculateAge === 'function' ? calculateAge(s.dateNaissance) : '–';
             }
-            const val = s[key];
+            const val = s[key] !== undefined ? s[key] : s[key.charAt(0).toUpperCase() + key.slice(1)];
             if (key === 'a1' || key === 'a2' || key === 'paramede') return val ? 'Oui' : 'Non';
             return (val !== undefined && val !== '' && val !== null) ? val : '–';
         })
